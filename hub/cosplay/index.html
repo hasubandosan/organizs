@@ -11,251 +11,135 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --bg:     #0a0a0f;
-      --s1:     #111118;
-      --s2:     #18181f;
-      --s3:     #22222c;
-      --border: #2c2c38;
-      --text:   #f0eeff;
-      --muted:  #585870;
-      --dim:    #8080a0;
-      --pink:   #ff6eb4;
-      --purple: #a78bfa;
-      --cyan:   #67e8f9;
-      --green:  #86efac;
-      --orange: #fb923c;
-      --danger: #f87171;
-      --r:      12px;
-      --rL:     22px;
-      --ff:     'Syne', sans-serif;
-      --fb:     'Golos Text', sans-serif;
+    :root{
+      --bg:#0a0a0f;--s1:#111118;--s2:#18181f;--s3:#22222c;
+      --border:#2c2c38;--text:#f0eeff;--muted:#585870;--dim:#8080a0;
+      --pink:#ff6eb4;--purple:#a78bfa;--cyan:#67e8f9;--green:#86efac;
+      --orange:#fb923c;--danger:#f87171;
+      --r:12px;--rL:22px;
+      --ff:'Syne',sans-serif;--fb:'Golos Text',sans-serif;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%;overflow:hidden;background:var(--bg)}
     body{font-family:var(--fb);color:var(--text);-webkit-font-smoothing:antialiased;font-size:15px}
     button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-    input,textarea{font-family:inherit;color:inherit;background:none;border:none;outline:none}
-
-    /* ── APP ── */
+    input,textarea,select{font-family:inherit;color:inherit;background:none;border:none;outline:none}
     #app{display:flex;flex-direction:column;height:100dvh}
 
-    /* ── NAV BREADCRUMB ── */
-    .nav{
-      flex-shrink:0;
-      padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 0;
-      display:flex;align-items:center;gap:6px;min-height:44px;
-    }
-    .nav-back{
-      width:34px;height:34px;border-radius:10px;
-      background:var(--s2);border:1px solid var(--border);
-      display:flex;align-items:center;justify-content:center;
-      font-size:16px;transition:background .15s,transform .1s;flex-shrink:0;
-    }
+    /* NAV */
+    .nav{flex-shrink:0;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 0;display:flex;align-items:center;gap:6px;min-height:44px}
+    .nav-back{width:34px;height:34px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;transition:transform .1s}
     .nav-back:active{transform:scale(.9)}
-    .nav-crumb{
-      flex:1;display:flex;align-items:center;gap:4px;
-      font-family:var(--ff);font-size:13px;font-weight:600;color:var(--muted);
-      overflow:hidden;
-    }
+    .nav-crumb{flex:1;font-family:var(--ff);font-size:13px;font-weight:600;color:var(--muted);overflow:hidden;display:flex;align-items:center;gap:4px}
     .nav-crumb .sep{color:var(--border)}
     .nav-crumb .cur{color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .nav-actions{display:flex;gap:6px;flex-shrink:0}
-    .icon-btn{
-      width:34px;height:34px;border-radius:10px;
-      background:var(--s2);border:1px solid var(--border);
-      display:flex;align-items:center;justify-content:center;
-      font-size:15px;transition:background .15s,transform .1s;
-    }
+    .icon-btn{width:34px;height:34px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;transition:transform .1s}
     .icon-btn:active{transform:scale(.9)}
 
-    /* ── PAGE HEADER ── */
-    .page-hdr{
-      flex-shrink:0;padding:10px 16px 12px;
-    }
-    .page-title{
-      font-family:var(--ff);font-size:24px;font-weight:800;letter-spacing:-.5px;line-height:1.1;
-    }
+    /* PAGE HEADER */
+    .page-hdr{flex-shrink:0;padding:10px 16px 12px}
+    .page-title{font-family:var(--ff);font-size:24px;font-weight:800;letter-spacing:-.5px}
     .page-title em{font-style:normal;background:linear-gradient(90deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
     .page-sub{font-size:13px;color:var(--muted);margin-top:3px}
 
-    /* ── SCROLL ── */
+    /* SCROLL */
     .scroll{flex:1;overflow-y:auto;padding:4px 16px 100px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
     .scroll::-webkit-scrollbar{width:3px}
     .scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
-    /* ── LOADING / EMPTY ── */
+    /* STATES */
     .center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:220px;color:var(--muted)}
     .spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--pink);border-radius:50%;animation:spin .7s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
     .empty-ico{font-size:48px}
     .empty-txt{font-family:var(--ff);font-size:13px}
+    @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+    @keyframes slideR{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
 
-    /* ── CHARACTER CARDS ── */
+    /* CHAR GRID */
     .char-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .char-card{
-      background:var(--s1);border:1px solid var(--border);border-radius:var(--rL);
-      overflow:hidden;cursor:pointer;transition:border-color .2s,transform .15s;
-      animation:pop .25s cubic-bezier(.16,1,.3,1) both;
-      position:relative;
-    }
+    .char-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rL);overflow:hidden;cursor:pointer;transition:border-color .2s,transform .15s;animation:pop .25s cubic-bezier(.16,1,.3,1) both;position:relative}
     .char-card:active{transform:scale(.95)}
     .char-card:hover{border-color:var(--purple)}
-    @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
-
-    .char-cover{
-      width:100%;aspect-ratio:3/4;background:var(--s3);
-      display:flex;align-items:center;justify-content:center;font-size:40px;
-      position:relative;overflow:hidden;
-    }
+    .char-cover{width:100%;aspect-ratio:3/4;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:40px;position:relative;overflow:hidden}
     .char-cover img{width:100%;height:100%;object-fit:cover}
-    .char-cover-gradient{
-      position:absolute;bottom:0;left:0;right:0;height:60%;
-      background:linear-gradient(to top,rgba(10,10,15,.95),transparent);
-    }
-    .char-cover-info{
-      position:absolute;bottom:0;left:0;right:0;padding:10px 12px;
-    }
+    .char-grad{position:absolute;bottom:0;left:0;right:0;height:60%;background:linear-gradient(to top,rgba(10,10,15,.95),transparent)}
+    .char-info{position:absolute;bottom:0;left:0;right:0;padding:10px 12px}
     .char-name{font-family:var(--ff);font-size:14px;font-weight:700;line-height:1.2}
-    .char-stats{font-size:11px;color:var(--dim);margin-top:2px;display:flex;gap:8px}
-    .char-prog{
-      position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--s3);
-    }
-    .char-prog-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:0 3px 3px 0;transition:width .4s}
+    .char-sub{font-size:11px;color:var(--dim);margin-top:2px}
+    .char-prog-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--s3)}
+    .char-prog-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));transition:width .4s}
 
-    /* ── LOOKS LIST ── */
-    .look-card{
-      display:flex;align-items:center;gap:12px;
-      background:var(--s1);border:1px solid var(--border);border-radius:var(--r);
-      overflow:hidden;cursor:pointer;margin-bottom:8px;
-      transition:border-color .15s,transform .1s;
-      animation:slideR .22s cubic-bezier(.16,1,.3,1) both;
-    }
+    /* LOOK LIST */
+    .look-card{display:flex;align-items:center;gap:0;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;margin-bottom:8px;transition:border-color .15s,transform .1s;animation:slideR .22s cubic-bezier(.16,1,.3,1) both}
     .look-card:active{transform:scale(.98)}
-    @keyframes slideR{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
-
-    .look-thumb{
-      width:80px;height:80px;flex-shrink:0;background:var(--s3);
-      display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;
-    }
+    .look-thumb{width:80px;height:80px;flex-shrink:0;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden}
     .look-thumb img{width:100%;height:100%;object-fit:cover}
-    .look-body{flex:1;min-width:0;padding:12px 12px 12px 0}
-    .look-name{font-family:var(--ff);font-size:15px;font-weight:700;margin-bottom:4px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .look-body{flex:1;min-width:0;padding:12px}
+    .look-name{font-family:var(--ff);font-size:15px;font-weight:700;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .look-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .status-chip{
-      padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;font-family:var(--ff);
-    }
+    .sc{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;font-family:var(--ff)}
     .sc-planning{background:rgba(107,114,128,.15);color:#9ca3af}
     .sc-progress{background:rgba(251,146,60,.15);color:var(--orange)}
     .sc-ready{background:rgba(134,239,172,.15);color:var(--green)}
-    .look-items-count{font-size:12px;color:var(--muted)}
-    .look-progress{height:3px;background:var(--s3);margin-top:8px;border-radius:3px;overflow:hidden}
-    .look-progress-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple));border-radius:3px;transition:width .4s}
+    .look-count{font-size:12px;color:var(--muted)}
+    .look-prog{height:3px;background:var(--s3);margin-top:7px;border-radius:3px;overflow:hidden}
+    .look-prog-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--purple))}
 
-    /* ── ITEMS LIST ── */
-    .item-card{
-      background:var(--s1);border:1px solid var(--border);border-radius:var(--r);
-      margin-bottom:8px;cursor:pointer;overflow:hidden;
-      transition:border-color .15s,transform .1s;
-      animation:pop .2s cubic-bezier(.16,1,.3,1) both;
-    }
+    /* ITEM LIST */
+    .item-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;cursor:pointer;overflow:hidden;transition:border-color .15s,transform .1s;animation:pop .2s cubic-bezier(.16,1,.3,1) both}
     .item-card:active{transform:scale(.985)}
-    .item-card-inner{display:flex;align-items:flex-start;gap:12px;padding:12px}
-    .item-thumb{
-      width:62px;height:62px;flex-shrink:0;border-radius:10px;background:var(--s3);
-      display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;
-    }
+    .item-inner{display:flex;align-items:flex-start;gap:12px;padding:12px}
+    .item-thumb{width:62px;height:62px;flex-shrink:0;border-radius:10px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden}
     .item-thumb img{width:100%;height:100%;object-fit:cover}
     .item-body{flex:1;min-width:0}
-    .item-name{font-family:var(--ff);font-size:14px;font-weight:700;margin-bottom:3px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .item-name{font-family:var(--ff);font-size:14px;font-weight:700;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .item-type{font-size:12px;color:var(--muted);margin-bottom:5px}
-    .item-status-row{display:flex;align-items:center;gap:8px}
-    .item-status{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;font-family:var(--ff)}
+    .item-st{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;font-family:var(--ff)}
     .is-have{background:rgba(134,239,172,.12);color:var(--green)}
     .is-buy{background:rgba(167,139,250,.12);color:var(--purple)}
     .is-make{background:rgba(103,232,249,.12);color:var(--cyan)}
-    /* shop variants strip */
-    .variants-strip{
-      display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto;scrollbar-width:none;
-    }
-    .variants-strip::-webkit-scrollbar{display:none}
-    .variant-chip{
-      flex-shrink:0;display:flex;align-items:center;gap:5px;
-      padding:5px 10px;border-radius:8px;background:var(--s2);border:1px solid var(--border);
-      font-size:12px;color:var(--dim);text-decoration:none;transition:border-color .15s,color .15s;
-    }
-    .variant-chip:hover{border-color:var(--purple);color:var(--text)}
-    .variant-chip.preferred{border-color:var(--pink);color:var(--pink)}
-    .variant-price{font-weight:700;font-family:'JetBrains Mono',monospace}
+    .vars-strip{display:flex;gap:6px;padding:0 12px 10px;overflow-x:auto;scrollbar-width:none}
+    .vars-strip::-webkit-scrollbar{display:none}
+    .var-chip{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;background:var(--s2);border:1px solid var(--border);font-size:12px;color:var(--dim);text-decoration:none;transition:border-color .15s,color .15s}
+    .var-chip:hover{border-color:var(--purple);color:var(--text)}
+    .var-chip.pref{border-color:var(--pink);color:var(--pink)}
+    .var-price{font-weight:700}
 
-    /* ── FAB ── */
-    .fab{
-      position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0));right:18px;
-      width:54px;height:54px;border-radius:50%;
-      background:linear-gradient(135deg,var(--pink),var(--purple));
-      color:#fff;font-size:24px;
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:0 4px 24px rgba(255,110,180,.35);
-      transition:transform .15s,box-shadow .15s;z-index:20;
-    }
+    /* FAB */
+    .fab{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0));right:18px;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(255,110,180,.35);transition:transform .15s;z-index:20}
     .fab:active{transform:scale(.9)}
 
-    /* ── OVERLAY & SHEET ── */
-    .overlay{
-      position:fixed;inset:0;background:rgba(0,0,0,.75);
-      z-index:100;opacity:0;pointer-events:none;
-      transition:opacity .25s;backdrop-filter:blur(8px);
-    }
+    /* OVERLAY + SHEET */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(8px)}
     .overlay.on{opacity:1;pointer-events:all}
-    .sheet{
-      position:fixed;bottom:0;left:0;right:0;
-      background:var(--s1);border-radius:var(--rL) var(--rL) 0 0;
-      border-top:1px solid var(--border);
-      z-index:101;max-height:94dvh;display:flex;flex-direction:column;
-      transform:translateY(100%);transition:transform .32s cubic-bezier(.16,1,.3,1);
-    }
+    .sheet{position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-radius:var(--rL) var(--rL) 0 0;border-top:1px solid var(--border);z-index:101;max-height:94dvh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .32s cubic-bezier(.16,1,.3,1)}
     .sheet.on{transform:translateY(0)}
     .sheet-drag{width:36px;height:4px;background:var(--border);border-radius:4px;margin:12px auto 0;flex-shrink:0}
     .sheet-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;flex-shrink:0}
     .sheet-title{font-family:var(--ff);font-size:16px;font-weight:700}
-    .close-btn{
-      width:30px;height:30px;border-radius:8px;background:var(--s3);
-      display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:16px;
-    }
-    .sheet-scroll{overflow-y:auto;padding:0 18px 44px;flex:1;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+    .close-btn{width:30px;height:30px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:16px}
+    .sheet-body{overflow-y:auto;padding:0 18px 44px;flex:1;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 
-    /* ── FORM ── */
+    /* FORM */
     .fg{margin-bottom:14px}
     .fl{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;font-family:var(--ff)}
     .fi{width:100%;padding:11px 13px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--text);transition:border-color .15s}
     .fi:focus{border-color:var(--purple)}
     .fi::placeholder{color:var(--muted)}
     textarea.fi{resize:vertical;min-height:70px}
-    .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     select.fi{cursor:pointer;appearance:none}
+    .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-    .img-up{
-      width:100%;height:130px;border-radius:var(--r);
-      border:1.5px dashed var(--border);background:var(--s2);
-      display:flex;align-items:center;justify-content:center;
-      gap:8px;color:var(--muted);font-size:13px;cursor:pointer;
-      position:relative;overflow:hidden;transition:border-color .15s;
-    }
+    .img-up{width:100%;height:130px;border-radius:var(--r);border:1.5px dashed var(--border);background:var(--s2);display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .15s}
     .img-up:hover{border-color:var(--purple)}
     .img-up img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
     .img-mask{position:absolute;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;font-size:13px;opacity:0;transition:opacity .15s}
     .img-up:hover .img-mask{opacity:1}
-    #imgInputA,#imgInputB{display:none}
 
-    /* status pills selector */
     .pill-sel{display:flex;gap:6px;flex-wrap:wrap}
-    .pill-opt{
-      padding:8px 14px;border-radius:100px;font-size:12px;font-weight:700;
-      border:1px solid var(--border);background:var(--s2);color:var(--muted);
-      transition:all .15s;cursor:pointer;font-family:var(--ff);
-    }
+    .pill-opt{padding:8px 14px;border-radius:100px;font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--s2);color:var(--muted);transition:all .15s;cursor:pointer;font-family:var(--ff)}
     .pill-opt.on-planning{background:rgba(107,114,128,.15);color:#9ca3af;border-color:#4b5563}
     .pill-opt.on-progress{background:rgba(251,146,60,.15);color:var(--orange);border-color:var(--orange)}
     .pill-opt.on-ready{background:rgba(134,239,172,.15);color:var(--green);border-color:var(--green)}
@@ -263,255 +147,240 @@
     .pill-opt.on-buy{background:rgba(167,139,250,.12);color:var(--purple);border-color:var(--purple)}
     .pill-opt.on-make{background:rgba(103,232,249,.12);color:var(--cyan);border-color:var(--cyan)}
 
-    /* variants editor */
-    .variants-editor{display:flex;flex-direction:column;gap:8px}
-    .variant-row{
-      display:flex;align-items:center;gap:8px;padding:10px 12px;
-      background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
-      position:relative;
-    }
-    .variant-row.pref{border-color:var(--pink)}
-    .variant-fields{flex:1;display:flex;flex-direction:column;gap:6px}
-    .variant-fields input{font-size:13px;background:var(--s3);padding:6px 10px;border-radius:8px;border:1px solid var(--border);color:var(--text);width:100%}
-    .variant-fields input:focus{border-color:var(--purple);outline:none}
-    .variant-right{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
-    .star-btn{font-size:18px;opacity:.4;transition:opacity .15s,transform .15s}
+    .refs-wrap{display:flex;gap:8px;flex-wrap:wrap}
+    .ref-thumb{width:70px;height:70px;border-radius:10px;overflow:hidden;position:relative;background:var(--s3);flex-shrink:0}
+    .ref-thumb img{width:100%;height:100%;object-fit:cover}
+    .ref-del{position:absolute;top:2px;right:2px;width:18px;height:18px;background:rgba(0,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;cursor:pointer}
+    .ref-add{width:70px;height:70px;border-radius:10px;border:1.5px dashed var(--border);background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted);cursor:pointer;transition:border-color .15s,color .15s;flex-shrink:0}
+    .ref-add:hover{border-color:var(--purple);color:var(--purple)}
+
+    .vars-editor{display:flex;flex-direction:column;gap:8px}
+    .var-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r)}
+    .var-row.pref{border-color:var(--pink)}
+    .var-fields{flex:1;display:flex;flex-direction:column;gap:6px}
+    .var-fields input{font-size:13px;background:var(--s3);padding:6px 10px;border-radius:8px;border:1px solid var(--border);color:var(--text);width:100%}
+    .var-fields input:focus{border-color:var(--purple);outline:none}
+    .var-right{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0}
+    .star-btn{font-size:18px;opacity:.35;transition:opacity .15s,transform .15s}
     .star-btn.on{opacity:1;transform:scale(1.1)}
-    .del-var{font-size:18px;color:var(--muted);padding:2px;transition:color .15s}
+    .del-var{font-size:18px;color:var(--muted);transition:color .15s}
     .del-var:hover{color:var(--danger)}
-    .btn-add-var{
-      width:100%;padding:10px;border:1.5px dashed var(--border);border-radius:var(--r);
-      font-size:13px;font-weight:600;color:var(--muted);transition:all .15s;
-    }
+    .btn-add-var{width:100%;padding:10px;border:1.5px dashed var(--border);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--muted);transition:all .15s}
     .btn-add-var:hover{border-color:var(--purple);color:var(--purple)}
 
-    /* refs (look photos) */
-    .refs-wrap{display:flex;gap:8px;flex-wrap:wrap}
-    .ref-thumb{
-      width:70px;height:70px;border-radius:10px;overflow:hidden;position:relative;
-      background:var(--s3);flex-shrink:0;
-    }
-    .ref-thumb img{width:100%;height:100%;object-fit:cover}
-    .ref-del{
-      position:absolute;top:2px;right:2px;width:18px;height:18px;
-      background:rgba(0,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;
-      font-size:11px;color:#fff;cursor:pointer;
-    }
-    .ref-add{
-      width:70px;height:70px;border-radius:10px;
-      border:1.5px dashed var(--border);background:var(--s2);
-      display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--muted);cursor:pointer;
-      transition:border-color .15s,color .15s;flex-shrink:0;
-    }
-    .ref-add:hover{border-color:var(--purple);color:var(--purple)}
-    #refInput{display:none}
-
-    /* btns */
-    .btn-save{
-      width:100%;padding:14px;
-      background:linear-gradient(135deg,var(--pink),var(--purple));
-      color:#fff;border-radius:var(--r);font-family:var(--ff);font-size:14px;font-weight:700;
-      transition:transform .1s,opacity .15s;margin-top:6px;
-    }
+    .btn-save{width:100%;padding:14px;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;border-radius:var(--r);font-family:var(--ff);font-size:14px;font-weight:700;transition:transform .1s,opacity .15s;margin-top:6px}
     .btn-save:active{transform:scale(.98)}
     .btn-save:disabled{opacity:.4;pointer-events:none}
     .btn-del{width:100%;padding:12px;border:1px solid rgba(248,113,113,.25);color:var(--danger);border-radius:var(--r);font-size:13px;font-weight:600;transition:background .15s;margin-top:6px}
     .btn-del:hover{background:rgba(248,113,113,.08)}
 
-    /* toast */
     .toast{position:fixed;bottom:86px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--s2);border:1px solid var(--border);border-radius:100px;padding:9px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s;z-index:300;pointer-events:none}
     .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
     .toast.ok{border-color:var(--green);color:var(--green)}
     .toast.err{border-color:var(--danger);color:var(--danger)}
-
-    /* look refs viewer */
-    .refs-viewer{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
-    .refs-viewer::-webkit-scrollbar{display:none}
-    .ref-view{width:90px;height:90px;border-radius:10px;overflow:hidden;flex-shrink:0;background:var(--s3);cursor:pointer}
-    .ref-view img{width:100%;height:100%;object-fit:cover}
-
-    /* section label */
-    .section-lbl{font-family:var(--ff);font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 8px}
   </style>
 </head>
 <body>
 <div id="app">
-  <div class="nav" id="navBar">
+  <div class="nav">
     <button class="nav-back" id="backBtn" style="display:none">‹</button>
     <div class="nav-crumb" id="breadcrumb"></div>
     <div class="nav-actions">
       <button class="icon-btn" id="btnSync">⟳</button>
     </div>
   </div>
-
-  <div class="page-hdr" id="pageHdr">
+  <div class="page-hdr">
     <div class="page-title" id="pageTitle">КОС<em>ПЛЕЙ</em></div>
     <div class="page-sub" id="pageSub">Персонажи</div>
   </div>
-
-  <div class="scroll" id="scrollArea">
+  <div class="scroll">
     <div class="center" id="loadingEl"><div class="spinner"></div></div>
     <div id="mainContent" style="display:none"></div>
     <div class="center" id="emptyEl" style="display:none">
       <div class="empty-ico">🎭</div>
-      <div class="empty-txt">Пусто</div>
+      <div class="empty-txt">Пусто — нажми +</div>
     </div>
   </div>
-
   <button class="fab" id="fabAdd">+</button>
 </div>
 
 <div class="overlay" id="overlay"></div>
-
-<!-- FORM SHEET — универсальный для персонажа / образа / предмета -->
 <div class="sheet" id="formSheet">
   <div class="sheet-drag"></div>
   <div class="sheet-hdr">
-    <div class="sheet-title" id="formTitle">Новый персонаж</div>
+    <div class="sheet-title" id="formTitle"></div>
     <button class="close-btn" id="formClose">✕</button>
   </div>
-  <div class="sheet-scroll" id="formBody"></div>
+  <div class="sheet-body" id="formBody"></div>
 </div>
 
 <div class="toast" id="toastEl"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// ══════════════════════════════════════════════════
-// ⚙️ КОНФИГ
-// ══════════════════════════════════════════════════
-const SUPABASE_URL  = 'https://wjeleewngroogzihfthv.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZWxlZXduZ3Jvb2d6aWhmdGh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3OTE1NjQsImV4cCI6MjA5MzM2NzU2NH0.gsBzZ2XCNdp-iP5_cKP12d8eVISmLerhU8LUSR3BJHI';
-const BUCKET        = 'media';
-const DEMO          = SUPABASE_URL.includes('YOUR_PROJECT');
-const sb            = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+"use strict";
 
-// ══════════════════════════════════════════════════
-// STATE — стек навигации
-// ══════════════════════════════════════════════════
-// view: 'chars' | 'looks' | 'items'
-let view      = 'chars';
-let curChar   = null;   // {id, name, ...}
-let curLook   = null;   // {id, name, ...}
+// ════════════════════════════════════════
+// UTILS — первыми, используются везде
+// ════════════════════════════════════════
+function ge(id) { return document.getElementById(id); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtP(n) { return Number(n).toLocaleString('ru-RU')+' ₽'; }
+var _tt;
+function toast(msg, type) {
+  var el = ge('toastEl');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'toast on ' + (type||'');
+  clearTimeout(_tt);
+  _tt = setTimeout(function(){ el.classList.remove('on'); }, 2500);
+}
 
-let characters = [];
-let looks      = [];    // для текущего персонажа
-let items      = [];    // для текущего образа
-let itemTypes  = [];    // cosplay_item_types
+// ════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════
+var SUPABASE_URL  = 'https://YOUR_PROJECT.supabase.co';
+var SUPABASE_ANON = 'YOUR_ANON_KEY';
+var BUCKET = 'media';
+var DEMO = SUPABASE_URL.indexOf('YOUR_PROJECT') !== -1;
+var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
-// ══════════════════════════════════════════════════
-// SUPABASE CALLS
-// ══════════════════════════════════════════════════
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+var view = 'chars';
+var curChar = null;
+var curLook = null;
+var characters = [];
+var looks = [];
+var items = [];
+var itemTypes = [];
+
+// form state
+var _editId = null;
+var _variantsDraft = [];
+var _refsDraft = [];
+var _coverFile = null; var _coverUrl = null;
+var _photoFile = null; var _photoUrl = null;
+
+// ════════════════════════════════════════
+// SUPABASE
+// ════════════════════════════════════════
 async function loadCharacters() {
-  if (DEMO) { characters = demoCars(); return; }
-  const { data, error } = await sb.from('cosplay_characters').select('*').order('created_at');
-  if (error) { toast('Ошибка: '+error.message,'err'); return; }
-  characters = data || [];
+  if (DEMO) { characters = demoChars(); return; }
+  var r = await sb.from('cosplay_characters').select('*').order('created_at');
+  if (r.error) { toast('Ошибка: '+r.error.message,'err'); return; }
+  characters = r.data || [];
 }
 async function loadLooks(charId) {
   if (DEMO) { looks = demoLooks(charId); return; }
-  const { data, error } = await sb.from('cosplay_looks').select('*').eq('character_id', charId).order('created_at');
-  if (error) { toast('Ошибка: '+error.message,'err'); return; }
-  looks = data || [];
+  var r = await sb.from('cosplay_looks').select('*').eq('character_id', charId).order('created_at');
+  if (r.error) { toast('Ошибка: '+r.error.message,'err'); return; }
+  looks = r.data || [];
 }
 async function loadItems(lookId) {
   if (DEMO) { items = demoItems(lookId); return; }
-  // items linked via item_ids array on look
-  const look = looks.find(l => l.id === lookId);
+  var look = looks.find(function(l){ return l.id === lookId; });
   if (!look || !look.item_ids || !look.item_ids.length) { items = []; return; }
-  const { data, error } = await sb.from('cosplay_items').select('*').in('id', look.item_ids);
-  if (error) { toast('Ошибка: '+error.message,'err'); return; }
-  items = data || [];
+  var r = await sb.from('cosplay_items').select('*').in('id', look.item_ids);
+  if (r.error) { toast('Ошибка: '+r.error.message,'err'); return; }
+  items = r.data || [];
 }
 async function loadItemTypes() {
   if (DEMO) { itemTypes = demoTypes(); return; }
-  const { data } = await sb.from('cosplay_item_types').select('*').order('name');
-  itemTypes = data || [];
+  var r = await sb.from('cosplay_item_types').select('*').order('name');
+  itemTypes = r.data || [];
 }
 
-async function saveCharacter(payload, id) {
+async function saveChar(payload, id) {
   if (DEMO) {
-    if (id) { const i = characters.findIndex(c=>c.id===id); if(i>=0) characters[i]={...characters[i],...payload}; }
-    else characters.push({id: 'c'+Date.now(), created_at: new Date().toISOString(), ...payload});
+    if (id) { var i=characters.findIndex(function(c){return c.id===id;}); if(i>=0) Object.assign(characters[i],payload); }
+    else characters.push(Object.assign({id:'c'+Date.now(),created_at:new Date().toISOString()},payload));
     return;
   }
-  if (id) { const {error}=await sb.from('cosplay_characters').update(payload).eq('id',id); if(error) throw error; }
-  else     { const {error}=await sb.from('cosplay_characters').insert(payload); if(error) throw error; }
+  var r = id ? await sb.from('cosplay_characters').update(payload).eq('id',id)
+              : await sb.from('cosplay_characters').insert(payload);
+  if (r.error) throw r.error;
 }
-async function deleteCharacter(id) {
-  if (DEMO) { characters=characters.filter(c=>c.id!==id); return; }
-  const {error}=await sb.from('cosplay_characters').delete().eq('id',id); if(error) throw error;
+async function deleteChar(id) {
+  if (DEMO) { characters=characters.filter(function(c){return c.id!==id;}); return; }
+  var r = await sb.from('cosplay_characters').delete().eq('id',id);
+  if (r.error) throw r.error;
 }
 
 async function saveLook(payload, id) {
   if (DEMO) {
-    if (id) { const i=looks.findIndex(l=>l.id===id); if(i>=0) looks[i]={...looks[i],...payload}; }
-    else looks.push({id:'l'+Date.now(), created_at: new Date().toISOString(), item_ids:[], ...payload});
+    if (id) { var i=looks.findIndex(function(l){return l.id===id;}); if(i>=0) Object.assign(looks[i],payload); }
+    else looks.push(Object.assign({id:'l'+Date.now(),created_at:new Date().toISOString(),item_ids:[]},payload));
     return;
   }
-  if (id) { const {error}=await sb.from('cosplay_looks').update(payload).eq('id',id); if(error) throw error; }
-  else     { const {error}=await sb.from('cosplay_looks').insert({...payload,character_id:curChar.id}); if(error) throw error; }
+  var r = id ? await sb.from('cosplay_looks').update(payload).eq('id',id)
+              : await sb.from('cosplay_looks').insert(Object.assign({character_id:curChar.id},payload));
+  if (r.error) throw r.error;
 }
 async function deleteLook(id) {
-  if (DEMO) { looks=looks.filter(l=>l.id!==id); return; }
-  const {error}=await sb.from('cosplay_looks').delete().eq('id',id); if(error) throw error;
+  if (DEMO) { looks=looks.filter(function(l){return l.id!==id;}); return; }
+  var r = await sb.from('cosplay_looks').delete().eq('id',id);
+  if (r.error) throw r.error;
 }
 
-async function saveCosItem(payload, id) {
+
+async function saveItem(payload, id) {
   if (DEMO) {
-    if (id) { const i=items.findIndex(x=>x.id===id); if(i>=0) items[i]={...items[i],...payload}; }
-    else {
-      const newItem = {id:'i'+Date.now(), created_at: new Date().toISOString(), ...payload};
-      items.push(newItem);
-      // link to look
-      const l = looks.find(l=>l.id===curLook.id);
-      if(l) l.item_ids = [...(l.item_ids||[]), newItem.id];
+    if (id) {
+      var i=items.findIndex(function(x){return x.id===id;});
+      if(i>=0) Object.assign(items[i],payload);
+    } else {
+      var ni = Object.assign({id:'i'+Date.now(),created_at:new Date().toISOString()},payload);
+      items.push(ni);
+      var l=looks.find(function(l){return l.id===curLook.id;});
+      if(l) l.item_ids=(l.item_ids||[]).concat([ni.id]);
     }
     return;
   }
-  let savedId = id;
   if (id) {
-    const {error}=await sb.from('cosplay_items').update(payload).eq('id',id); if(error) throw error;
+    var r2 = await sb.from('cosplay_items').update(payload).eq('id',id);
+    if (r2.error) throw r2.error;
   } else {
-    const {data,error}=await sb.from('cosplay_items').insert(payload).select().single(); if(error) throw error;
-    savedId = data.id;
-    // append to look.item_ids
-    const look = looks.find(l=>l.id===curLook.id);
-    const newIds = [...(look?.item_ids||[]), savedId];
-    const {error:e2}=await sb.from('cosplay_looks').update({item_ids:newIds}).eq('id',curLook.id);
-    if(e2) throw e2;
+    var r3 = await sb.from('cosplay_items').insert(payload).select().single();
+    if (r3.error) throw r3.error;
+    var look2 = looks.find(function(l){return l.id===curLook.id;});
+    var newIds = (look2&&look2.item_ids||[]).concat([r3.data.id]);
+    var r4 = await sb.from('cosplay_looks').update({item_ids:newIds}).eq('id',curLook.id);
+    if (r4.error) throw r4.error;
   }
 }
-async function deleteCosItem(id) {
+async function deleteItem(id) {
   if (DEMO) {
-    items = items.filter(x=>x.id!==id);
-    const l = looks.find(l=>l.id===curLook.id);
-    if(l) l.item_ids = (l.item_ids||[]).filter(x=>x!==id);
+    items=items.filter(function(x){return x.id!==id;});
+    var l=looks.find(function(l){return l.id===curLook.id;});
+    if(l) l.item_ids=(l.item_ids||[]).filter(function(x){return x!==id;});
     return;
   }
-  const {error}=await sb.from('cosplay_items').delete().eq('id',id); if(error) throw error;
-  const look = looks.find(l=>l.id===curLook.id);
-  const newIds = (look?.item_ids||[]).filter(x=>x!==id);
-  await sb.from('cosplay_looks').update({item_ids:newIds}).eq('id',curLook.id);
+  var r = await sb.from('cosplay_items').delete().eq('id',id);
+  if (r.error) throw r.error;
+  var look3=looks.find(function(l){return l.id===curLook.id;});
+  var newIds2=(look3&&look3.item_ids||[]).filter(function(x){return x!==id;});
+  await sb.from('cosplay_looks').update({item_ids:newIds2}).eq('id',curLook.id);
 }
 
 async function uploadFile(file, folder) {
-  const ext  = file.name.split('.').pop();
-  const path = `cosplay/${folder}/${Date.now()}.${ext}`;
-  const {error}=await sb.storage.from(BUCKET).upload(path,file,{upsert:true}); if(error) throw error;
+  var ext = file.name.split('.').pop();
+  var path = 'cosplay/'+folder+'/'+Date.now()+'.'+ext;
+  var r = await sb.storage.from(BUCKET).upload(path,file,{upsert:true});
+  if (r.error) throw r.error;
   return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
 }
 
-// ══════════════════════════════════════════════════
+// ════════════════════════════════════════
 // NAVIGATION
-// ══════════════════════════════════════════════════
+// ════════════════════════════════════════
 function setView(v) {
   view = v;
-  const back   = $('backBtn');
-  const crumb  = $('breadcrumb');
-  const title  = $('pageTitle');
-  const sub    = $('pageSub');
-
+  var back  = ge('backBtn');
+  var crumb = ge('breadcrumb');
+  var title = ge('pageTitle');
+  var sub   = ge('pageSub');
   if (v === 'chars') {
     back.style.display = 'none';
     crumb.innerHTML = '';
@@ -519,21 +388,16 @@ function setView(v) {
     sub.textContent = 'Персонажи';
   } else if (v === 'looks') {
     back.style.display = 'flex';
-    crumb.innerHTML = `<span>${esc(curChar.name)}</span><span class="sep"> / </span><span class="cur">Образы</span>`;
-    title.innerHTML = `${esc(curChar.name)}`;
+    crumb.innerHTML = '<span>'+esc(curChar.name)+'</span><span class="sep"> / </span><span class="cur">Образы</span>';
+    title.innerHTML = esc(curChar.name);
     sub.textContent = 'Образы';
-  } else if (v === 'items') {
+  } else {
     back.style.display = 'flex';
-    crumb.innerHTML = `<span>${esc(curChar.name)}</span><span class="sep"> / </span><span>${esc(curLook.name)}</span><span class="sep"> / </span><span class="cur">Предметы</span>`;
+    crumb.innerHTML = '<span>'+esc(curChar.name)+'</span><span class="sep"> / </span><span>'+esc(curLook.name)+'</span><span class="sep"> / </span><span class="cur">Предметы</span>';
     title.innerHTML = esc(curLook.name);
     sub.textContent = 'Предметы образа';
   }
 }
-
-$('backBtn').addEventListener('click', () => {
-  if (view === 'items') { gotoLooks(curChar); }
-  else if (view === 'looks') { gotoChars(); }
-});
 
 async function gotoChars() {
   showLoading();
@@ -557,507 +421,451 @@ async function gotoItems(look) {
   renderItems();
 }
 
-// ══════════════════════════════════════════════════
-// RENDER
-// ══════════════════════════════════════════════════
+// ════════════════════════════════════════
+// RENDER HELPERS
+// ════════════════════════════════════════
 function showLoading() {
-  $('loadingEl').style.display='flex';
-  $('mainContent').style.display='none';
-  $('emptyEl').style.display='none';
+  ge('loadingEl').style.display = 'flex';
+  ge('mainContent').style.display = 'none';
+  ge('emptyEl').style.display = 'none';
 }
 function showContent(html) {
-  $('loadingEl').style.display='none';
-  if (!html) { $('emptyEl').style.display='flex'; $('mainContent').style.display='none'; return; }
-  $('mainContent').innerHTML=html;
-  $('mainContent').style.display='block';
-  $('emptyEl').style.display='none';
+  ge('loadingEl').style.display = 'none';
+  if (!html) {
+    ge('emptyEl').style.display = 'flex';
+    ge('mainContent').style.display = 'none';
+    return;
+  }
+  ge('mainContent').innerHTML = html;
+  ge('mainContent').style.display = 'block';
+  ge('emptyEl').style.display = 'none';
 }
 
-function renderChars() {
-  if (!characters.length) { showContent(''); return; }
-  const html = `<div class="char-grid">${characters.map((c,idx)=>{
-    const totalLooks = c.looks_count || 0;
-    const prog = c.progress || 0;
-    return `<div class="char-card" data-id="${c.id}" style="animation-delay:${idx*.04}s">
-      <div class="char-cover">
-        ${c.cover_url ? `<img src="${esc(c.cover_url)}" loading="lazy"/>` : '🎭'}
-        <div class="char-cover-gradient"></div>
-        <div class="char-cover-info">
-          <div class="char-name">${esc(c.name)}</div>
-          <div class="char-stats"><span>${totalLooks} образов</span></div>
-        </div>
-      </div>
-      <div class="char-prog"><div class="char-prog-fill" style="width:${prog}%"></div></div>
-    </div>`;
-  }).join('')}</div>`;
-  showContent(html);
-  $('mainContent').querySelectorAll('.char-card').forEach(el => {
-    el.addEventListener('click', () => gotoLooks(characters.find(c=>c.id===el.dataset.id)));
-    el.addEventListener('contextmenu', e => { e.preventDefault(); openEditChar(el.dataset.id); });
-  });
-}
-
+// ════════════════════════════════════════
+// RENDER LOOKS
+// ════════════════════════════════════════
 function renderLooks() {
   if (!looks.length) { showContent(''); return; }
-  const html = looks.map((l,idx) => {
-    const total  = (l.item_ids||[]).length;
-    const prog   = l.progress || 0;
-    const scCls  = l.status==='ready'?'sc-ready':l.status==='progress'?'sc-progress':'sc-planning';
-    const scTxt  = l.status==='ready'?'Готов':l.status==='progress'?'В процессе':'Планирую';
-    return `<div class="look-card" data-id="${l.id}" style="animation-delay:${idx*.04}s">
-      <div class="look-thumb">
-        ${l.refs&&l.refs[l.main_ref_index||0] ? `<img src="${esc(l.refs[l.main_ref_index||0])}" loading="lazy"/>` : '✨'}
-      </div>
-      <div class="look-body">
-        <div class="look-name">${esc(l.name)}</div>
-        <div class="look-meta">
-          <span class="status-chip ${scCls}">${scTxt}</span>
-          <span class="look-items-count">${total} предметов</span>
-        </div>
-        <div class="look-progress"><div class="look-progress-fill" style="width:${prog}%"></div></div>
-      </div>
-    </div>`;
+  var html = looks.map(function(l, idx) {
+    var scCls = l.status==='ready' ? 'sc-ready' : l.status==='progress' ? 'sc-progress' : 'sc-planning';
+    var scTxt = l.status==='ready' ? 'Готов' : l.status==='progress' ? 'В процессе' : 'Планирую';
+    var total = (l.item_ids||[]).length;
+    var prog  = l.progress || 0;
+    var thumb = (l.refs && l.refs[l.main_ref_index||0])
+      ? '<img src="'+esc(l.refs[l.main_ref_index||0])+'" loading="lazy"/>' : '✨';
+    return '<div class="look-card" data-id="'+l.id+'" style="animation-delay:'+idx*.04+'s">'
+      + '<div class="look-thumb">'+thumb+'</div>'
+      + '<div class="look-body">'
+      + '<div class="look-name">'+esc(l.name)+'</div>'
+      + '<div class="look-meta"><span class="sc '+scCls+'">'+scTxt+'</span>'
+      + '<span class="look-count">'+total+' предметов</span></div>'
+      + '<div class="look-prog"><div class="look-prog-fill" style="width:'+prog+'%"></div></div>'
+      + '</div></div>';
   }).join('');
   showContent(html);
-  $('mainContent').querySelectorAll('.look-card').forEach(el => {
-    el.addEventListener('click',  () => gotoItems(looks.find(l=>l.id===el.dataset.id)));
-    el.addEventListener('contextmenu', e => { e.preventDefault(); openEditLook(el.dataset.id); });
+  ge('mainContent').querySelectorAll('.look-card').forEach(function(el) {
+    el.addEventListener('click', function() {
+      gotoItems(looks.find(function(l){return l.id===el.dataset.id;}));
+    });
+    el.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      openEditLook(el.dataset.id);
+    });
   });
 }
 
+// ════════════════════════════════════════
+// RENDER ITEMS
+// ════════════════════════════════════════
 function renderItems() {
   if (!items.length) { showContent(''); return; }
-  const html = items.map((item,idx) => {
-    const type    = itemTypes.find(t=>t.id===item.type_id);
-    const variants= Array.isArray(item.variants) ? item.variants : (typeof item.variants==='string'?JSON.parse(item.variants||'[]'):[]);
-    const isCls   = item.status==='have'?'is-have':item.status==='make'?'is-make':'is-buy';
-    const isTxt   = item.status==='have'?'Есть':item.status==='make'?'Шить/делать':'Купить';
-    const varHtml = variants.length ? `<div class="variants-strip">${variants.map(v=>`
-      <a class="variant-chip ${v.is_preferred?'preferred':''}" href="${esc(v.url||'#')}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
-        ${v.shop_name||'Магазин'}${v.price?` · <span class="variant-price">${fmtP(v.price)}</span>`:''}
-        ${v.is_preferred?'⭐':''}
-      </a>`).join('')}</div>` : '';
-    return `<div class="item-card" data-id="${item.id}" style="animation-delay:${idx*.03}s">
-      <div class="item-card-inner">
-        <div class="item-thumb">
-          ${item.photos&&item.photos[0]?`<img src="${esc(item.photos[0])}" loading="lazy"/>`:(type?.emoji||'📦')}
-        </div>
-        <div class="item-body">
-          <div class="item-name">${esc(item.name)}</div>
-          ${type?`<div class="item-type">${type.emoji||''} ${esc(type.name)}</div>`:''}
-          <div class="item-status-row">
-            <span class="item-status ${isCls}">${isTxt}</span>
-          </div>
-        </div>
-      </div>
-      ${varHtml}
-    </div>`;
+  var html = items.map(function(item, idx) {
+    var type = itemTypes.find(function(t){return t.id===item.type_id;});
+    var vars = [];
+    try { vars = Array.isArray(item.variants) ? item.variants : JSON.parse(item.variants||'[]'); } catch(e){}
+    var isCls = item.status==='have' ? 'is-have' : item.status==='make' ? 'is-make' : 'is-buy';
+    var isTxt = item.status==='have' ? 'Уже есть' : item.status==='make' ? 'Шить/делать' : 'Купить';
+    var varHtml = vars.length ? '<div class="vars-strip">'
+      + vars.map(function(v){
+          return '<a class="var-chip'+(v.is_preferred?' pref':'')+'" href="'+esc(v.url||'#')+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'
+            + esc(v.shop_name||'Магазин')
+            + (v.price ? ' · <span class="var-price">'+fmtP(v.price)+'</span>' : '')
+            + (v.is_preferred ? ' ⭐' : '')
+            + '</a>';
+        }).join('')
+      + '</div>' : '';
+    var thumb = (item.photos && item.photos[0])
+      ? '<img src="'+esc(item.photos[0])+'" loading="lazy"/>'
+      : (type && type.emoji ? type.emoji : '📦');
+    return '<div class="item-card" data-id="'+item.id+'" style="animation-delay:'+idx*.03+'s">'
+      + '<div class="item-inner">'
+      + '<div class="item-thumb">'+thumb+'</div>'
+      + '<div class="item-body">'
+      + '<div class="item-name">'+esc(item.name)+'</div>'
+      + (type ? '<div class="item-type">'+(type.emoji||'')+' '+esc(type.name)+'</div>' : '')
+      + '<span class="item-st '+isCls+'">'+isTxt+'</span>'
+      + '</div></div>'
+      + varHtml + '</div>';
   }).join('');
   showContent(html);
-  $('mainContent').querySelectorAll('.item-card').forEach(el => {
-    el.addEventListener('click', () => openEditItem(el.dataset.id));
+  ge('mainContent').querySelectorAll('.item-card').forEach(function(el) {
+    el.addEventListener('click', function() { openEditItem(el.dataset.id); });
   });
 }
 
-// ══════════════════════════════════════════════════
-// FORM BUILDER
-// ══════════════════════════════════════════════════
-let _formMode = null; // 'char' | 'look' | 'item'
-let _editId   = null;
-let _variantsDraft = [];
-let _refsDraft     = [];
-let _coverFile = null, _coverUrl = null;
-let _photoFile = null, _photoUrl = null;
-
-function openSheet() {
-  $('overlay').classList.add('on');
-  $('formSheet').classList.add('on');
-  document.body.style.overflow='hidden';
+// ════════════════════════════════════════
+// SHEET OPEN / CLOSE
+// ════════════════════════════════════════
+function openSheet(title) {
+  ge('formTitle').textContent = title;
+  ge('overlay').classList.add('on');
+  ge('formSheet').classList.add('on');
+  document.body.style.overflow = 'hidden';
 }
 function closeSheet() {
-  $('overlay').classList.remove('on');
-  $('formSheet').classList.remove('on');
-  document.body.style.overflow='';
-  _formMode=null; _editId=null;
-  _variantsDraft=[]; _refsDraft=[];
-  _coverFile=null; _coverUrl=null;
-  _photoFile=null; _photoUrl=null;
+  ge('overlay').classList.remove('on');
+  ge('formSheet').classList.remove('on');
+  document.body.style.overflow = '';
+  _editId=null; _variantsDraft=[]; _refsDraft=[];
+  _coverFile=null; _coverUrl=null; _photoFile=null; _photoUrl=null;
 }
-$('overlay').addEventListener('click', closeSheet);
-$('formClose').addEventListener('click', closeSheet);
 
-// ─── CHARACTER FORM ───
-function openAddChar()  { buildCharForm(null); }
-function openEditChar(id) {
-  const c = characters.find(x=>x.id===id);
-  if(c) buildCharForm(c);
-}
+// ════════════════════════════════════════
+// CHAR FORM
+// ════════════════════════════════════════
+function openAddChar()   { buildCharForm(null); }
+function openEditChar(id){ buildCharForm(characters.find(function(c){return c.id===id;})||null); }
+
 function buildCharForm(char) {
-  _formMode='char'; _editId=char?.id||null;
-  _coverUrl = char?.cover_url||null;
-  $('formTitle').textContent = char ? 'Редактировать персонажа' : 'Новый персонаж';
-  $('formBody').innerHTML = `
-    <div class="fg">
-      <label class="fl">Обложка</label>
-      <div class="img-up" id="coverUp">
-        <span id="coverUpLbl">🎭 Добавить фото</span>
-        ${_coverUrl?`<img src="${esc(_coverUrl)}"/>`:''}
-        <div class="img-mask">🔄 Заменить</div>
-      </div>
-      <input type="file" id="imgInputA" accept="image/*"/>
-    </div>
-    <div class="fg">
-      <label class="fl">Имя персонажа *</label>
-      <input id="fCharName" class="fi" placeholder="Например: Nezuko Kamado" value="${esc(char?.name||'')}"/>
-    </div>
-    <div class="fg">
-      <label class="fl">Заметки</label>
-      <textarea id="fCharNotes" class="fi" placeholder="Источник, аниме/игра...">${esc(char?.notes||'')}</textarea>
-    </div>
-    <button class="btn-save" id="btnSave">Сохранить</button>
-    ${char?`<button class="btn-del" id="btnDel">Удалить персонажа</button>`:''}`;
+  _editId = char ? char.id : null;
+  _coverUrl = char ? (char.cover_url||null) : null;
+  openSheet(char ? 'Редактировать персонажа' : 'Новый персонаж');
 
-  setupImgUp('coverUp','imgInputA','cover');
-  if(_coverUrl) { $('coverUp').querySelector('img') || ($('coverUp').insertAdjacentHTML('beforeend',`<img src="${esc(_coverUrl)}">`)); $('coverUpLbl').style.display='none'; }
+  var delBtn = char ? '<button class="btn-del" id="fDelBtn">Удалить персонажа</button>' : '';
+  ge('formBody').innerHTML =
+    '<div class="fg"><label class="fl">Обложка</label>'
+    + '<div class="img-up" id="fImgUp">'
+    + '<span id="fImgLbl">🎭 Добавить фото</span>'
+    + (_coverUrl ? '<img id="fImgEl" src="'+esc(_coverUrl)+'"/>' : '<img id="fImgEl" style="display:none"/>')
+    + '<div class="img-mask">🔄 Заменить</div></div>'
+    + '<input type="file" id="fImgInput" accept="image/*" style="display:none"/></div>'
+    + '<div class="fg"><label class="fl">Имя *</label>'
+    + '<input id="fCharName" class="fi" placeholder="Nezuko, Zero Two..." value="'+esc(char?char.name:'')+'"/></div>'
+    + '<div class="fg"><label class="fl">Источник</label>'
+    + '<input id="fCharNotes" class="fi" placeholder="Аниме, игра, манга..." value="'+esc(char?char.notes:'')+'"/></div>'
+    + '<button class="btn-save" id="fSaveBtn">Сохранить</button>'
+    + delBtn;
 
-  $('btnSave').addEventListener('click', async () => {
-    const name = $('fCharName').value.trim();
+  if (_coverUrl) ge('fImgLbl').style.display='none';
+
+  ge('fImgUp').addEventListener('click', function(){ ge('fImgInput').click(); });
+  ge('fImgInput').addEventListener('change', function(e){
+    var f=e.target.files[0]; if(!f) return;
+    _coverFile=f;
+    var r=new FileReader(); r.onload=function(ev){
+      var img=ge('fImgEl'); img.src=ev.target.result; img.style.display='block';
+      ge('fImgLbl').style.display='none';
+    }; r.readAsDataURL(f);
+  });
+
+  ge('fSaveBtn').addEventListener('click', async function(){
+    var name=ge('fCharName').value.trim();
     if(!name){toast('Введи имя','err');return;}
-    setLoading(true);
+    ge('fSaveBtn').disabled=true; ge('fSaveBtn').textContent='Сохранение...';
     try {
-      let cover = _coverUrl;
-      if(_coverFile) cover = await uploadFile(_coverFile,'chars');
-      await saveCharacter({name, notes:$('fCharNotes').value.trim()||null, cover_url:cover||null}, _editId);
+      var cover=_coverUrl;
+      if(_coverFile) cover=await uploadFile(_coverFile,'chars');
+      await saveChar({name:name,notes:ge('fCharNotes').value.trim()||null,cover_url:cover||null},_editId);
       await loadCharacters(); renderChars(); closeSheet(); toast(char?'Обновлено ✓':'Добавлено ✓','ok');
-    } catch(e){toast('Ошибка: '+e.message,'err');}
-    finally{setLoading(false);}
+    } catch(e){ toast('Ошибка: '+e.message,'err'); }
+    finally { ge('fSaveBtn') && (ge('fSaveBtn').disabled=false,ge('fSaveBtn').textContent='Сохранить'); }
   });
-  if(char) $('btnDel')?.addEventListener('click', async()=>{
-    if(!confirm('Удалить персонажа и все его образы?')) return;
-    try{await deleteCharacter(char.id);await loadCharacters();renderChars();closeSheet();toast('Удалено','ok');}
-    catch(e){toast('Ошибка: '+e.message,'err');}
+
+  if(char) ge('fDelBtn').addEventListener('click', async function(){
+    if(!confirm('Удалить персонажа?')) return;
+    try{ await deleteChar(char.id); await loadCharacters(); renderChars(); closeSheet(); toast('Удалено','ok'); }
+    catch(e){ toast('Ошибка: '+e.message,'err'); }
   });
-  openSheet();
 }
 
-// ─── LOOK FORM ───
-function openAddLook()  { buildLookForm(null); }
-function openEditLook(id) { buildLookForm(looks.find(l=>l.id===id)||null); }
+// ════════════════════════════════════════
+// LOOK FORM
+// ════════════════════════════════════════
+function openAddLook()   { buildLookForm(null); }
+function openEditLook(id){ buildLookForm(looks.find(function(l){return l.id===id;})||null); }
+
 function buildLookForm(look) {
-  _formMode='look'; _editId=look?.id||null;
-  _refsDraft = [...(look?.refs||[])];
-  let lookStatus = look?.status||'planning';
+  _editId    = look ? look.id : null;
+  _refsDraft = look ? (look.refs||[]).slice() : [];
+  var lookStatus = look ? look.status||'planning' : 'planning';
+  openSheet(look ? 'Редактировать образ' : 'Новый образ');
 
-  $('formTitle').textContent = look ? 'Редактировать образ' : 'Новый образ';
-  $('formBody').innerHTML = `
-    <div class="fg">
-      <label class="fl">Название образа *</label>
-      <input id="fLookName" class="fi" placeholder="Школьная форма, боевой..." value="${esc(look?.name||'')}"/>
-    </div>
-    <div class="fg">
-      <label class="fl">Статус</label>
-      <div class="pill-sel" id="lookStatusSel">
-        <button class="pill-opt" data-v="planning">Планирую</button>
-        <button class="pill-opt" data-v="progress">В процессе</button>
-        <button class="pill-opt" data-v="ready">Готов</button>
-      </div>
-    </div>
-    <div class="fg">
-      <label class="fl">Референс-фото</label>
-      <div class="refs-wrap" id="refsWrap"></div>
-      <input type="file" id="refInput" accept="image/*" multiple/>
-    </div>
-    <div class="fg">
-      <label class="fl">Заметки</label>
-      <textarea id="fLookNotes" class="fi" placeholder="Описание, детали...">${esc(look?.notes||'')}</textarea>
-    </div>
-    <button class="btn-save" id="btnSave">Сохранить</button>
-    ${look?`<button class="btn-del" id="btnDel">Удалить образ</button>`:''}`;
+  var delBtn = look ? '<button class="btn-del" id="fDelBtn">Удалить образ</button>' : '';
+  ge('formBody').innerHTML =
+    '<div class="fg"><label class="fl">Название *</label>'
+    + '<input id="fLookName" class="fi" placeholder="Школьная форма, боевой..." value="'+esc(look?look.name:'')+'"/></div>'
+    + '<div class="fg"><label class="fl">Статус</label>'
+    + '<div class="pill-sel" id="fLookStatus">'
+    + '<button class="pill-opt" data-v="planning">Планирую</button>'
+    + '<button class="pill-opt" data-v="progress">В процессе</button>'
+    + '<button class="pill-opt" data-v="ready">Готов</button>'
+    + '</div></div>'
+    + '<div class="fg"><label class="fl">Референс-фото</label>'
+    + '<div class="refs-wrap" id="fRefsWrap"></div>'
+    + '<input type="file" id="fRefInput" accept="image/*" multiple style="display:none"/></div>'
+    + '<div class="fg"><label class="fl">Заметки</label>'
+    + '<textarea id="fLookNotes" class="fi" placeholder="Детали, нюансы...">'+esc(look?look.notes||'':'')+'</textarea></div>'
+    + '<button class="btn-save" id="fSaveBtn">Сохранить</button>'
+    + delBtn;
 
-  // status pills
-  const syncLookStatus = () => {
-    $('lookStatusSel').querySelectorAll('.pill-opt').forEach(b=>{
+  // status sync
+  function syncStatus(){
+    ge('fLookStatus').querySelectorAll('.pill-opt').forEach(function(b){
       b.className='pill-opt';
-      if(b.dataset.v===lookStatus) b.classList.add(`on-${lookStatus}`);
+      if(b.dataset.v===lookStatus) b.classList.add('on-'+lookStatus);
     });
-  };
-  syncLookStatus();
-  $('lookStatusSel').addEventListener('click', e=>{
-    const b=e.target.closest('.pill-opt'); if(!b) return;
-    lookStatus=b.dataset.v; syncLookStatus();
+  }
+  syncStatus();
+  ge('fLookStatus').addEventListener('click', function(e){
+    var b=e.target.closest('.pill-opt'); if(!b) return;
+    lookStatus=b.dataset.v; syncStatus();
   });
 
   // refs
-  const renderRefs = () => {
-    const wrap = $('refsWrap');
-    wrap.innerHTML = _refsDraft.map((url,i)=>`
-      <div class="ref-thumb">
-        <img src="${esc(url)}"/>
-        <div class="ref-del" data-i="${i}">×</div>
-      </div>`).join('') + `<div class="ref-add" id="refAddBtn">＋</div>`;
-    wrap.querySelectorAll('.ref-del').forEach(btn=>{
-      btn.addEventListener('click',()=>{_refsDraft.splice(+btn.dataset.i,1);renderRefs();});
+  function renderRefs(){
+    var wrap=ge('fRefsWrap');
+    wrap.innerHTML = _refsDraft.map(function(url,i){
+      return '<div class="ref-thumb"><img src="'+esc(url)+'"/><div class="ref-del" data-i="'+i+'">×</div></div>';
+    }).join('') + '<div class="ref-add" id="fRefAddBtn">＋</div>';
+    wrap.querySelectorAll('.ref-del').forEach(function(btn){
+      btn.addEventListener('click',function(){ _refsDraft.splice(+btn.dataset.i,1); renderRefs(); });
     });
-    $('refAddBtn').addEventListener('click',()=>$('refInput').click());
-  };
+    ge('fRefAddBtn').addEventListener('click',function(){ ge('fRefInput').click(); });
+  }
   renderRefs();
-  $('refInput').addEventListener('change', async e=>{
-    const files=[...e.target.files]; if(!files.length) return;
-    if(!DEMO) {
-      for(const f of files){ const url=await uploadFile(f,'refs'); _refsDraft.push(url); }
-    } else {
-      files.forEach(f=>{const r=new FileReader();r.onload=ev=>{_refsDraft.push(ev.target.result);renderRefs();};r.readAsDataURL(f);});
+
+  ge('fRefInput').addEventListener('change', function(e){
+    var files=Array.from(e.target.files);
+    files.forEach(function(f){
+      var rd=new FileReader(); rd.onload=function(ev){ _refsDraft.push(ev.target.result); renderRefs(); }; rd.readAsDataURL(f);
+    });
+    // if real Supabase — upload
+    if (!DEMO) {
+      files.forEach(async function(f){
+        try { var url=await uploadFile(f,'refs'); _refsDraft[_refsDraft.length-1]=url; renderRefs(); } catch(e){}
+      });
     }
-    if(!DEMO) renderRefs();
   });
 
-  $('btnSave').addEventListener('click', async()=>{
-    const name=$('fLookName').value.trim(); if(!name){toast('Введи название','err');return;}
-    setLoading(true);
+  ge('fSaveBtn').addEventListener('click', async function(){
+    var name=ge('fLookName').value.trim();
+    if(!name){toast('Введи название','err');return;}
+    ge('fSaveBtn').disabled=true; ge('fSaveBtn').textContent='Сохранение...';
     try{
-      await saveLook({name,status:lookStatus,notes:$('fLookNotes').value.trim()||null,refs:_refsDraft,main_ref_index:0},_editId);
+      await saveLook({name:name,status:lookStatus,notes:ge('fLookNotes').value.trim()||null,refs:_refsDraft,main_ref_index:0},_editId);
       await loadLooks(curChar.id); renderLooks(); closeSheet(); toast(look?'Обновлено ✓':'Добавлено ✓','ok');
     }catch(e){toast('Ошибка: '+e.message,'err');}
-    finally{setLoading(false);}
+    finally{ ge('fSaveBtn')&&(ge('fSaveBtn').disabled=false,ge('fSaveBtn').textContent='Сохранить'); }
   });
-  if(look) $('btnDel')?.addEventListener('click',async()=>{
+
+  if(look) ge('fDelBtn').addEventListener('click', async function(){
     if(!confirm('Удалить образ?')) return;
-    try{await deleteLook(look.id);await loadLooks(curChar.id);renderLooks();closeSheet();toast('Удалено','ok');}
-    catch(e){toast('Ошибка: '+e.message,'err');}
+    try{ await deleteLook(look.id); await loadLooks(curChar.id); renderLooks(); closeSheet(); toast('Удалено','ok'); }
+    catch(e){ toast('Ошибка: '+e.message,'err'); }
   });
-  openSheet();
 }
 
-// ─── ITEM FORM ───
-function openAddItem()  { buildItemForm(null); }
-function openEditItem(id){ buildItemForm(items.find(x=>x.id===id)||null); }
-function buildItemForm(item) {
-  _formMode='item'; _editId=item?.id||null;
-  _variantsDraft = item?.variants ? JSON.parse(JSON.stringify(Array.isArray(item.variants)?item.variants:(typeof item.variants==='string'?JSON.parse(item.variants||'[]'):[]))) : [];
-  _photoUrl = item?.photos?.[0]||null;
-  let itemStatus = item?.status||'buy';
+// ════════════════════════════════════════
+// ITEM FORM
+// ════════════════════════════════════════
+function openAddItem()   { buildItemForm(null); }
+function openEditItem(id){ buildItemForm(items.find(function(x){return x.id===id;})||null); }
 
-  $('formTitle').textContent = item ? 'Редактировать предмет' : 'Новый предмет';
-  $('formBody').innerHTML = `
-    <div class="fg">
-      <label class="fl">Фото предмета</label>
-      <div class="img-up" id="itemPhotoUp">
-        <span id="itemPhotoLbl">📷 Добавить фото</span>
-        ${_photoUrl?`<img src="${esc(_photoUrl)}"/>`:''}
-        <div class="img-mask">🔄 Заменить</div>
-      </div>
-      <input type="file" id="imgInputB" accept="image/*"/>
-    </div>
-    <div class="fg">
-      <label class="fl">Название *</label>
-      <input id="fItemName" class="fi" placeholder="Парик, пояс, меч..." value="${esc(item?.name||'')}"/>
-    </div>
-    <div class="frow">
-      <div class="fg">
-        <label class="fl">Тип</label>
-        <select id="fItemType" class="fi">
-          <option value="">— без типа —</option>
-          ${itemTypes.map(t=>`<option value="${t.id}" ${item?.type_id===t.id?'selected':''}>${t.emoji||''} ${esc(t.name)}</option>`).join('')}
-        </select>
-      </div>
-      <div class="fg">
-        <label class="fl">Статус</label>
-        <div class="pill-sel" id="itemStatusSel" style="flex-direction:column;align-items:flex-start">
-          <button class="pill-opt" data-v="buy">Купить</button>
-          <button class="pill-opt" data-v="make">Шить/делать</button>
-          <button class="pill-opt" data-v="have">Уже есть</button>
-        </div>
-      </div>
-    </div>
-    <div class="fg">
-      <label class="fl">Заметки</label>
-      <textarea id="fItemNotes" class="fi" placeholder="Размер, цвет, детали...">${esc(item?.notes||'')}</textarea>
-    </div>
-    <div class="fg">
-      <label class="fl">Варианты покупки</label>
-      <div class="variants-editor" id="varsEditor"></div>
-      <button class="btn-add-var" id="btnAddVar">+ Добавить магазин</button>
-    </div>
-    <button class="btn-save" id="btnSave">Сохранить</button>
-    ${item?`<button class="btn-del" id="btnDel">Удалить предмет</button>`:''}`;
+function buildItemForm(item) {
+  _editId = item ? item.id : null;
+  _photoUrl = item && item.photos && item.photos[0] ? item.photos[0] : null;
+  try { _variantsDraft = item ? JSON.parse(JSON.stringify(Array.isArray(item.variants)?item.variants:JSON.parse(item.variants||'[]'))) : []; }
+  catch(e){ _variantsDraft=[]; }
+  var itemStatus = item ? (item.status||'buy') : 'buy';
+  openSheet(item ? 'Редактировать предмет' : 'Новый предмет');
+
+  var typeOptions = '<option value="">— без типа —</option>'
+    + itemTypes.map(function(t){
+        return '<option value="'+t.id+'"'+(item&&item.type_id===t.id?' selected':'')+'>'+(t.emoji||'')+' '+esc(t.name)+'</option>';
+      }).join('');
+  var delBtn = item ? '<button class="btn-del" id="fDelBtn">Удалить предмет</button>' : '';
+
+  ge('formBody').innerHTML =
+    '<div class="fg"><label class="fl">Фото</label>'
+    + '<div class="img-up" id="fPhotoUp">'
+    + '<span id="fPhotoLbl">📷 Добавить фото</span>'
+    + (_photoUrl ? '<img id="fPhotoEl" src="'+esc(_photoUrl)+'"/>' : '<img id="fPhotoEl" style="display:none"/>')
+    + '<div class="img-mask">🔄 Заменить</div></div>'
+    + '<input type="file" id="fPhotoInput" accept="image/*" style="display:none"/></div>'
+    + '<div class="fg"><label class="fl">Название *</label>'
+    + '<input id="fItemName" class="fi" placeholder="Парик, меч, кимоно..." value="'+esc(item?item.name:'')+'"/></div>'
+    + '<div class="frow">'
+    + '<div class="fg"><label class="fl">Тип</label><select id="fItemType" class="fi">'+typeOptions+'</select></div>'
+    + '<div class="fg"><label class="fl">Статус</label>'
+    + '<div class="pill-sel" id="fItemStatus" style="flex-direction:column">'
+    + '<button class="pill-opt" data-v="buy">Купить</button>'
+    + '<button class="pill-opt" data-v="make">Шить/делать</button>'
+    + '<button class="pill-opt" data-v="have">Уже есть</button>'
+    + '</div></div></div>'
+    + '<div class="fg"><label class="fl">Заметки</label>'
+    + '<textarea id="fItemNotes" class="fi" placeholder="Размер, цвет, детали...">'+esc(item?item.notes||'':'')+'</textarea></div>'
+    + '<div class="fg"><label class="fl">Варианты покупки</label>'
+    + '<div class="vars-editor" id="fVarsEditor"></div>'
+    + '<button class="btn-add-var" id="fAddVar">+ Добавить магазин</button></div>'
+    + '<button class="btn-save" id="fSaveBtn">Сохранить</button>'
+    + delBtn;
+
+  if(_photoUrl) ge('fPhotoLbl').style.display='none';
+
+  // photo
+  ge('fPhotoUp').addEventListener('click',function(){ ge('fPhotoInput').click(); });
+  ge('fPhotoInput').addEventListener('change',function(e){
+    var f=e.target.files[0]; if(!f) return; _photoFile=f;
+    var rd=new FileReader(); rd.onload=function(ev){
+      var img=ge('fPhotoEl'); img.src=ev.target.result; img.style.display='block';
+      ge('fPhotoLbl').style.display='none';
+    }; rd.readAsDataURL(f);
+  });
 
   // item status
-  const syncItemStatus=()=>{
-    $('itemStatusSel').querySelectorAll('.pill-opt').forEach(b=>{
+  function syncItemStatus(){
+    ge('fItemStatus').querySelectorAll('.pill-opt').forEach(function(b){
       b.className='pill-opt';
-      if(b.dataset.v===itemStatus) b.classList.add(`on-${itemStatus}`);
+      if(b.dataset.v===itemStatus) b.classList.add('on-'+itemStatus);
     });
-  };
+  }
   syncItemStatus();
-  $('itemStatusSel').addEventListener('click',e=>{
-    const b=e.target.closest('.pill-opt'); if(!b) return;
+  ge('fItemStatus').addEventListener('click',function(e){
+    var b=e.target.closest('.pill-opt'); if(!b) return;
     itemStatus=b.dataset.v; syncItemStatus();
   });
 
-  // photo
-  if(_photoUrl){$('itemPhotoLbl').style.display='none';}
-  setupImgUp('itemPhotoUp','imgInputB','items');
-
   // variants
-  const renderVars=()=>{
-    const ed=$('varsEditor');
-    ed.innerHTML=_variantsDraft.map((v,i)=>`
-      <div class="variant-row ${v.is_preferred?'pref':''}" data-i="${i}">
-        <div class="variant-fields">
-          <input class="var-shop" placeholder="Название магазина" value="${esc(v.shop_name||'')}"/>
-          <input class="var-url"  placeholder="Ссылка https://..." value="${esc(v.url||'')}"/>
-          <input class="var-price" type="number" placeholder="Цена ₽" value="${v.price||''}"/>
-        </div>
-        <div class="variant-right">
-          <button class="star-btn ${v.is_preferred?'on':''}" data-i="${i}">⭐</button>
-          <button class="del-var" data-i="${i}">×</button>
-        </div>
-      </div>`).join('');
-    ed.querySelectorAll('.star-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        const idx=+btn.dataset.i;
-        _variantsDraft.forEach((v,j)=>v.is_preferred=(j===idx?!v.is_preferred:false));
+  function renderVars(){
+    var ed=ge('fVarsEditor');
+    ed.innerHTML=_variantsDraft.map(function(v,i){
+      return '<div class="var-row'+(v.is_preferred?' pref':'')+'" data-i="'+i+'">'
+        +'<div class="var-fields">'
+        +'<input class="vs" placeholder="Название магазина" value="'+esc(v.shop_name||'')+'" data-f="shop_name" data-i="'+i+'"/>'
+        +'<input class="vu" placeholder="Ссылка https://..." value="'+esc(v.url||'')+'" data-f="url" data-i="'+i+'"/>'
+        +'<input class="vp" type="number" placeholder="Цена ₽" value="'+(v.price||'')+'" data-f="price" data-i="'+i+'"/>'
+        +'</div>'
+        +'<div class="var-right">'
+        +'<button class="star-btn'+(v.is_preferred?' on':'')+'" data-i="'+i+'">⭐</button>'
+        +'<button class="del-var" data-i="'+i+'">×</button>'
+        +'</div></div>';
+    }).join('');
+    ed.querySelectorAll('.star-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var idx=+btn.dataset.i;
+        _variantsDraft.forEach(function(v,j){ v.is_preferred=(j===idx?!v.is_preferred:false); });
         renderVars();
       });
     });
-    ed.querySelectorAll('.del-var').forEach(btn=>{
-      btn.addEventListener('click',()=>{_variantsDraft.splice(+btn.dataset.i,1);renderVars();});
+    ed.querySelectorAll('.del-var').forEach(function(btn){
+      btn.addEventListener('click',function(){ _variantsDraft.splice(+btn.dataset.i,1); renderVars(); });
     });
-    // sync inputs live
-    ed.querySelectorAll('.variant-row').forEach((row,i)=>{
-      row.querySelector('.var-shop').addEventListener('input',e=>_variantsDraft[i].shop_name=e.target.value);
-      row.querySelector('.var-url').addEventListener('input',e=>_variantsDraft[i].url=e.target.value);
-      row.querySelector('.var-price').addEventListener('input',e=>_variantsDraft[i].price=parseFloat(e.target.value)||null);
+    ed.querySelectorAll('input').forEach(function(inp){
+      inp.addEventListener('input',function(){
+        var i=+inp.dataset.i, f=inp.dataset.f;
+        _variantsDraft[i][f] = f==='price' ? (parseFloat(inp.value)||null) : inp.value;
+      });
     });
-  };
+  }
   renderVars();
-  $('btnAddVar').addEventListener('click',()=>{_variantsDraft.push({shop_name:'',url:'',price:null,is_preferred:false});renderVars();});
+  ge('fAddVar').addEventListener('click',function(){
+    _variantsDraft.push({shop_name:'',url:'',price:null,is_preferred:false}); renderVars();
+  });
 
-  $('btnSave').addEventListener('click',async()=>{
-    const name=$('fItemName').value.trim(); if(!name){toast('Введи название','err');return;}
-    setLoading(true);
+  ge('fSaveBtn').addEventListener('click', async function(){
+    var name=ge('fItemName').value.trim(); if(!name){toast('Введи название','err');return;}
+    ge('fSaveBtn').disabled=true; ge('fSaveBtn').textContent='Сохранение...';
     try{
-      let photo=_photoUrl;
+      var photo=_photoUrl;
       if(_photoFile) photo=await uploadFile(_photoFile,'items');
-      await saveCosItem({
-        name,
-        type_id:$('fItemType').value||null,
-        status:itemStatus,
-        notes:$('fItemNotes').value.trim()||null,
-        photos:photo?[photo]:[],
-        variants:_variantsDraft,
-      },_editId);
+      await saveItem({name:name,type_id:ge('fItemType').value||null,status:itemStatus,notes:ge('fItemNotes').value.trim()||null,photos:photo?[photo]:[],variants:_variantsDraft},_editId);
       await loadItems(curLook.id); renderItems(); closeSheet(); toast(item?'Обновлено ✓':'Добавлено ✓','ok');
     }catch(e){toast('Ошибка: '+e.message,'err');}
-    finally{setLoading(false);}
+    finally{ ge('fSaveBtn')&&(ge('fSaveBtn').disabled=false,ge('fSaveBtn').textContent='Сохранить'); }
   });
-  if(item) $('btnDel')?.addEventListener('click',async()=>{
+
+  if(item) ge('fDelBtn').addEventListener('click', async function(){
     if(!confirm('Удалить предмет?')) return;
-    try{await deleteCosItem(item.id);await loadItems(curLook.id);renderItems();closeSheet();toast('Удалено','ok');}
-    catch(e){toast('Ошибка: '+e.message,'err');}
-  });
-  openSheet();
-}
-
-// shared image upload helper
-function setupImgUp(upId, inputId, folder) {
-  const up = $(upId); if(!up) return;
-  up.addEventListener('click',()=>$(inputId).click());
-  $(inputId).addEventListener('change',e=>{
-    const f=e.target.files[0]; if(!f) return;
-    if(folder==='cover') _coverFile=f;
-    else _photoFile=f;
-    const r=new FileReader();
-    r.onload=ev=>{
-      let img=up.querySelector('img');
-      if(!img){img=document.createElement('img');up.appendChild(img);}
-      img.src=ev.target.result;img.style.display='block';
-      const lbl=up.querySelector('span'); if(lbl) lbl.style.display='none';
-    };
-    r.readAsDataURL(f);
+    try{ await deleteItem(item.id); await loadItems(curLook.id); renderItems(); closeSheet(); toast('Удалено','ok'); }
+    catch(e){ toast('Ошибка: '+e.message,'err'); }
   });
 }
 
-function setLoading(on) {
-  const btn = $('btnSave'); if(!btn) return;
-  btn.disabled=on; btn.textContent=on?'Сохранение...':'Сохранить';
-}
-
-// ══════════════════════════════════════════════════
-// FAB
-// ══════════════════════════════════════════════════
-$('fabAdd').addEventListener('click',()=>{
-  if(view==='chars')  openAddChar();
-  else if(view==='looks') openAddLook();
-  else if(view==='items') openAddItem();
-});
-
-$('btnSync').addEventListener('click',async()=>{
-  showLoading();
-  if(view==='chars')       await loadCharacters(),renderChars();
-  else if(view==='looks')  await loadLooks(curChar.id),renderLooks();
-  else if(view==='items')  await loadItems(curLook.id),renderItems();
-  toast('Обновлено','ok');
-});
-
-// ══════════════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════════════
-const $=id=>document.getElementById(id);
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function fmtP(n){return Number(n).toLocaleString('ru-RU')+' ₽';}
-let _tt;
-function toast(msg,type=''){
-  const el=$('toastEl');
-  el.textContent=msg;el.className='toast on '+(type||'');
-  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('on'),2500);
-}
-
-// ══════════════════════════════════════════════════
+// ════════════════════════════════════════
 // DEMO DATA
-// ══════════════════════════════════════════════════
-function demoCars(){return[
-  {id:'ch1',name:'Nezuko Kamado',notes:'Kimetsu no Yaiba',cover_url:'',looks_count:2,progress:60},
-  {id:'ch2',name:'Zero Two',notes:'Darling in the FranXX',cover_url:'',looks_count:1,progress:30},
-  {id:'ch3',name:'Miku Nakano',notes:'Quintessential Quintuplets',cover_url:'',looks_count:1,progress:80},
+// ════════════════════════════════════════
+function demoChars(){ return [
+  {id:'ch1',name:'Nezuko Kamado',notes:'Kimetsu no Yaiba',cover_url:'',progress:60},
+  {id:'ch2',name:'Zero Two',notes:'Darling in the FranXX',cover_url:'',progress:30},
+  {id:'ch3',name:'Miku Nakano',notes:'Quintessential Quintuplets',cover_url:'',progress:80},
 ];}
-function demoLooks(cid){
-  const map={
-    ch1:[
-      {id:'l1',name:'Школьная форма',status:'ready',refs:[],main_ref_index:0,item_ids:['i1','i2'],notes:'',progress:100},
-      {id:'l2',name:'Демон-форма',status:'progress',refs:[],main_ref_index:0,item_ids:['i3'],notes:'',progress:45},
-    ],
-    ch2:[{id:'l3',name:'Боевой костюм',status:'planning',refs:[],main_ref_index:0,item_ids:[],notes:'',progress:0}],
-    ch3:[{id:'l4',name:'Повседневный образ',status:'progress',refs:[],main_ref_index:0,item_ids:['i4'],notes:'',progress:55}],
-  };
-  return map[cid]||[];
-}
-function demoItems(lid){
-  const map={
-    l1:[
-      {id:'i1',name:'Парик чёрный',type_id:'t1',status:'have',notes:'',photos:[],variants:[]},
-      {id:'i2',name:'Кимоно розовое',type_id:'t3',status:'buy',notes:'Размер S',photos:[],variants:[{shop_name:'Wildberries',url:'https://wildberries.ru',price:3200,is_preferred:true},{shop_name:'AliExpress',url:'https://aliexpress.ru',price:2100,is_preferred:false}]},
-    ],
-    l2:[{id:'i3',name:'Рога демона',type_id:'t4',status:'make',notes:'Из термопластики',photos:[],variants:[]}],
-    l4:[{id:'i4',name:'Парик зелёный',type_id:'t1',status:'buy',notes:'',photos:[],variants:[{shop_name:'Ozon',url:'https://ozon.ru',price:1800,is_preferred:false}]}],
-  };
-  return map[lid]||[];
-}
-function demoTypes(){return[
+function demoLooks(cid){ var m={
+  ch1:[
+    {id:'l1',name:'Школьная форма',status:'ready',refs:[],main_ref_index:0,item_ids:['i1','i2'],notes:'',progress:100},
+    {id:'l2',name:'Форма демона',status:'progress',refs:[],main_ref_index:0,item_ids:['i3'],notes:'',progress:45},
+  ],
+  ch2:[{id:'l3',name:'Боевой костюм',status:'planning',refs:[],main_ref_index:0,item_ids:[],notes:'',progress:0}],
+  ch3:[{id:'l4',name:'Повседневный',status:'progress',refs:[],main_ref_index:0,item_ids:['i4'],notes:'',progress:55}],
+}; return m[cid]||[]; }
+function demoItems(lid){ var m={
+  l1:[
+    {id:'i1',name:'Парик чёрный',type_id:'t1',status:'have',notes:'',photos:[],variants:[]},
+    {id:'i2',name:'Кимоно розовое',type_id:'t3',status:'buy',notes:'Размер S',photos:[],variants:[
+      {shop_name:'Wildberries',url:'https://wildberries.ru',price:3200,is_preferred:true},
+      {shop_name:'AliExpress',url:'https://aliexpress.ru',price:2100,is_preferred:false},
+    ]},
+  ],
+  l2:[{id:'i3',name:'Рога демона',type_id:'t4',status:'make',notes:'Термопластика',photos:[],variants:[]}],
+  l4:[{id:'i4',name:'Парик зелёный',type_id:'t1',status:'buy',notes:'',photos:[],variants:[
+    {shop_name:'Ozon',url:'https://ozon.ru',price:1800,is_preferred:false},
+  ]}],
+}; return m[lid]||[]; }
+function demoTypes(){ return [
   {id:'t1',name:'Причёска',emoji:'💇'},{id:'t2',name:'Обувь',emoji:'👠'},
   {id:'t3',name:'Одежда',emoji:'👗'},{id:'t4',name:'Аксессуары',emoji:'💍'},
   {id:'t5',name:'Грим',emoji:'💄'},{id:'t6',name:'Оружие / реквизит',emoji:'⚔️'},
 ];}
 
-// ══════════════════════════════════════════════════
+
+
+// ════════════════════════════════════════
 // BOOT
-// ══════════════════════════════════════════════════
-(async()=>{
+// ════════════════════════════════════════
+ge('overlay').addEventListener('click', closeSheet);
+ge('formClose').addEventListener('click', closeSheet);
+ge('backBtn').addEventListener('click', function(){
+  if(view==='items') gotoLooks(curChar);
+  else if(view==='looks') gotoChars();
+});
+ge('fabAdd').addEventListener('click', function(){
+  if(view==='chars') openAddChar();
+  else if(view==='looks') openAddLook();
+  else openAddItem();
+});
+ge('btnSync').addEventListener('click', async function(){
+  showLoading();
+  if(view==='chars') { await loadCharacters(); renderChars(); }
+  else if(view==='looks') { await loadLooks(curChar.id); renderLooks(); }
+  else { await loadItems(curLook.id); renderItems(); }
+  toast('Обновлено','ok');
+});
+
+(async function(){
   await loadItemTypes();
   await gotoChars();
-  if(DEMO) toast('⚠ Демо-режим — замени ключи Supabase','err');
+  if(DEMO) toast('Демо-режим — замени ключи Supabase','err');
   if('serviceWorker' in navigator && !DEMO)
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
 })();
 </script>
 </body>
