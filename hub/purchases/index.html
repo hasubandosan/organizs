@@ -586,22 +586,30 @@ const emptyEl   = $('emptyEl');
 // ══════════════════════════════════════════════════
 async function loadItems() {
   if (DEMO_MODE) { items = getDemoItems(); return; }
+  // Загружаем shopping + косплей-предметы у которых есть preferred-вариант
   const { data, error } = await sb.from('purchases').select('*')
-    .eq('module','shopping').order('priority',{ascending:false});
+    .or('module.eq.shopping,source_module.eq.cosplay')
+    .order('priority',{ascending:false});
   if (error) { toast('Ошибка: ' + error.message, 'err'); return; }
   items = data || [];
 }
 
 async function loadCategories() {
   if (DEMO_MODE) { categories = getDemoCats(); return; }
+  // Загружаем категории видимые в shopping или cosplay
   const { data, error } = await sb.from('categories').select('*')
-    .eq('module','shopping').order('name');
+    .order('name');
   if (error) return;
   categories = data || [];
 }
 
 async function upsertItem(payload) {
   if (editId) {
+    const item = items.find(i => i.id === editId);
+    // Нельзя редактировать косплей-предметы через модуль покупок
+    if (item && item.source_module === 'cosplay') {
+      toast('Косплей-предмет — редактируй в модуле Косплея', 'err'); return;
+    }
     const { error } = await sb.from('purchases').update(payload).eq('id', editId);
     if (error) throw error;
   } else {
@@ -611,15 +619,33 @@ async function upsertItem(payload) {
 }
 
 async function removeItem(id) {
+  const item = items.find(i => i.id === id);
+  if (item && item.source_module === 'cosplay') {
+    toast('Косплей-предмет — удаляй в модуле Косплея', 'err'); return;
+  }
   const { error } = await sb.from('purchases').delete().eq('id', id);
   if (error) throw error;
 }
 
-async function addCategory(name, emoji) {
-  if (DEMO_MODE) { categories.push({id: Date.now()+'', name, emoji, module:'shopping'}); return; }
-  const { data, error } = await sb.from('categories').insert({name, emoji, module:'shopping'}).select().single();
+async function addCategory(name, emoji, modules, showInPurchases) {
+  if (DEMO_MODE) {
+    categories.push({id: Date.now()+'', name, emoji, modules: modules||['shopping'], show_in_purchases: !!showInPurchases});
+    return;
+  }
+  const { data, error } = await sb.from('categories').insert({
+    name, emoji,
+    modules: modules || ['shopping'],
+    show_in_purchases: !!showInPurchases,
+  }).select().single();
   if (error) throw error;
   categories.push(data);
+}
+
+async function updateCategory(id, patch) {
+  const { error } = await sb.from('categories').update(patch).eq('id', id);
+  if (error) throw error;
+  const i = categories.findIndex(c => c.id === id);
+  if (i >= 0) Object.assign(categories[i], patch);
 }
 
 async function deleteCategory(id) {
@@ -700,6 +726,7 @@ function renderGallery(list) {
       <div class="gal-img">
         ${item.photo_url ? `<img src="${esc(item.photo_url)}" loading="lazy"/>` : '🛍️'}
         <div class="gal-prio"></div>
+        ${item.source_module==='cosplay' ? `<div style="position:absolute;top:6px;left:6px;background:rgba(167,139,250,.85);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;letter-spacing:.04em">🎭 КОС</div>` : ''}
       </div>
       <div class="gal-body">
         <div class="gal-name">${esc(item.name)}</div>
@@ -727,6 +754,8 @@ function renderList(list) {
       const p = item.priority ?? 1;
       const pLabel = p===2 ? ['p2','🔴 СРОЧНО'] : p===1 ? ['p1','📅 ПЛАН'] : ['p0','○ ОБЫ'];
       const tags = (item.tags||[]).map(t=>`<span class="tag-pill">${esc(t)}</span>`).join('');
+      const cosplayBadge = item.source_module==='cosplay'
+        ? `<span class="tag-pill" style="background:rgba(167,139,250,.2);color:#a78bfa;border:1px solid rgba(167,139,250,.3)">🎭 Косплей</span>` : '';
       return `<div class="item-card ${item.status==='done'?'done':''}" data-priority="${p}" data-id="${item.id}" style="animation-delay:${idx*0.025}s">
         <div class="item-thumb">
           ${item.photo_url ? `<img src="${esc(item.photo_url)}" loading="lazy"/>` : '🛍️'}
@@ -737,7 +766,7 @@ function renderList(list) {
             ${item.price ? `<span class="item-price">${fmtPrice(item.price)}</span>` : ''}
             <span class="item-status-dot ${item.status==='ordered'?'ordered':item.status==='done'?'done':''}"></span>
           </div>
-          ${tags ? `<div class="item-tags-row">${tags}</div>` : ''}
+          ${tags||cosplayBadge ? `<div class="item-tags-row">${cosplayBadge}${tags}</div>` : ''}
         </div>
         <span class="prio-badge ${pLabel[0]}">${pLabel[1]}</span>
       </div>`;
@@ -964,19 +993,67 @@ function renderCatDropdown(q) {
 }
 
 // ══════════════════════════════════════════════════
-// MANAGE CATEGORIES
+// MANAGE CATEGORIES + MODULE SETTINGS
 // ══════════════════════════════════════════════════
+const ALL_MODULES = [
+  { id: 'shopping', label: '🛒 Покупки' },
+  { id: 'cosplay',  label: '🎭 Косплей' },
+];
+
 function renderManageList() {
-  $('manageList').innerHTML = categories.map(c =>
-    `<div class="manage-item">
-      <span class="manage-emoji">${c.emoji||'📦'}</span>
-      <span class="manage-name">${esc(c.name)}</span>
-      <button class="manage-del" data-id="${c.id}">×</button>
-    </div>`
-  ).join('');
+  $('manageList').innerHTML = categories.map(c => {
+    const mods = Array.isArray(c.modules) ? c.modules : [];
+    const modBadges = ALL_MODULES.map(m =>
+      `<span class="tag-pill" style="cursor:pointer;${mods.includes(m.id)?'background:rgba(212,245,66,.15);color:var(--accent);border-color:var(--accent)':''}"
+        data-cat="${c.id}" data-mod="${m.id}" title="Показывать в ${m.label}">${m.label}</span>`
+    ).join('');
+    return `<div class="manage-item" style="flex-direction:column;align-items:flex-start;gap:8px">
+      <div style="display:flex;align-items:center;gap:8px;width:100%">
+        <span class="manage-emoji">${c.emoji||'📦'}</span>
+        <span class="manage-name" style="flex:1">${esc(c.name)}</span>
+        <button class="manage-del" data-id="${c.id}">×</button>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;padding-left:2px">
+        <span style="font-size:11px;color:var(--muted);margin-right:2px">Модули:</span>
+        ${modBadges}
+        <span class="tag-pill" style="cursor:pointer;${c.show_in_purchases?'background:rgba(79,195,247,.15);color:var(--blue);border-color:var(--blue)':''}"
+          data-cat="${c.id}" data-toggle="purchases" title="Показывать косплей-предметы этой категории в покупках">
+          🛒 В покупках
+        </span>
+      </div>
+    </div>`;
+  }).join('') || '<div style="color:var(--muted);font-size:13px;padding:8px 0">Категорий нет</div>';
+
+  // Toggle module visibility
+  $('manageList').querySelectorAll('[data-mod]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const catId = btn.dataset.cat;
+      const mod   = btn.dataset.mod;
+      const cat   = categories.find(c => c.id === catId);
+      if (!cat) return;
+      const mods = Array.isArray(cat.modules) ? [...cat.modules] : [];
+      const idx  = mods.indexOf(mod);
+      if (idx >= 0) mods.splice(idx, 1); else mods.push(mod);
+      await updateCategory(catId, { modules: mods });
+      renderManageList();
+    });
+  });
+
+  // Toggle show_in_purchases
+  $('manageList').querySelectorAll('[data-toggle="purchases"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const cat = categories.find(c => c.id === btn.dataset.cat);
+      if (!cat) return;
+      await updateCategory(cat.id, { show_in_purchases: !cat.show_in_purchases });
+      renderManageList();
+    });
+  });
+
+  // Delete
   $('manageList').querySelectorAll('.manage-del').forEach(btn => {
     btn.addEventListener('click', async () => {
-      if(!confirm(`Удалить категорию «${btn.closest('.manage-item').querySelector('.manage-name').textContent}»?`)) return;
+      const name = btn.closest('.manage-item').querySelector('.manage-name').textContent;
+      if (!confirm(`Удалить категорию «${name}»?`)) return;
       await deleteCategory(btn.dataset.id);
       renderManageList();
       toast('Удалено', 'ok');
@@ -993,7 +1070,7 @@ $('btnAddCat').addEventListener('click', async () => {
   const emoji = $('newCatEmoji').value.trim() || '📦';
   if (!name) { toast('Введи название', 'err'); return; }
   try {
-    await addCategory(name, emoji);
+    await addCategory(name, emoji, ['shopping'], false);
     $('newCatName').value=''; $('newCatEmoji').value='';
     renderManageList(); toast('Добавлено ✓','ok');
   } catch(e) { toast('Ошибка: '+e.message,'err'); }
