@@ -340,18 +340,67 @@ async function saveItem(payload, id) {
     }
     return;
   }
+  var itemId = id;
   if (id) {
     var r2 = await sb.from('cosplay_items').update(payload).eq('id',id);
     if (r2.error) throw r2.error;
   } else {
     var r3 = await sb.from('cosplay_items').insert(payload).select().single();
     if (r3.error) throw r3.error;
+    itemId = r3.data.id;
     var look2 = looks.find(function(l){return l.id===curLook.id;});
-    var newIds = (look2&&look2.item_ids||[]).concat([r3.data.id]);
+    var newIds = (look2&&look2.item_ids||[]).concat([itemId]);
     var r4 = await sb.from('cosplay_looks').update({item_ids:newIds}).eq('id',curLook.id);
     if (r4.error) throw r4.error;
   }
+  // Синхронизируем preferred-вариант в общую таблицу покупок
+  await syncItemToPurchases(itemId, payload);
 }
+
+// Синхронизация preferred-варианта косплей-предмета → purchases
+async function syncItemToPurchases(itemId, payload) {
+  try {
+    var variants = payload.variants || [];
+    if (typeof variants === 'string') { try { variants = JSON.parse(variants); } catch(e) { variants = []; } }
+    var pref = variants.find(function(v){ return v.is_preferred; });
+
+    // Ищем существующую запись в purchases
+    var existing = await sb.from('purchases')
+      .select('id').eq('source_module','cosplay').eq('source_item_id',itemId).single();
+
+    if (pref) {
+      // Есть preferred вариант — создаём/обновляем запись в покупках
+      var purchasePayload = {
+        name:           payload.name || '',
+        module:         'cosplay',
+        source_module:  'cosplay',
+        source_item_id: itemId,
+        shop_name:      pref.shop_name || null,
+        url:            pref.url || null,
+        price:          pref.price || null,
+        photo_url:      (payload.photos && payload.photos[0]) || null,
+        status:         payload.status === 'have' ? 'done' : 'want',
+        category:       'Косплей',
+        is_preferred:   true,
+        tags:           ['косплей'],
+      };
+      if (existing.data) {
+        await sb.from('purchases').update(purchasePayload).eq('id', existing.data.id);
+      } else {
+        await sb.from('purchases').insert(purchasePayload);
+      }
+    } else {
+      // Нет preferred варианта — удаляем запись из покупок (если была)
+      if (existing.data) {
+        await sb.from('purchases').delete().eq('id', existing.data.id);
+      }
+    }
+  } catch(e) {
+    // Не прерываем основной флоу если синхронизация упала
+    console.warn('syncItemToPurchases error:', e);
+  }
+}
+
 async function deleteItem(id) {
   if (DEMO) {
     items=items.filter(function(x){return x.id!==id;});
@@ -364,6 +413,8 @@ async function deleteItem(id) {
   var look3=looks.find(function(l){return l.id===curLook.id;});
   var newIds2=(look3&&look3.item_ids||[]).filter(function(x){return x!==id;});
   await sb.from('cosplay_looks').update({item_ids:newIds2}).eq('id',curLook.id);
+  // Удаляем из покупок
+  await sb.from('purchases').delete().eq('source_module','cosplay').eq('source_item_id',id);
 }
 
 async function uploadFile(file, folder) {
