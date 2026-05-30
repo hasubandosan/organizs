@@ -784,9 +784,29 @@ function buildLookForm(look) {
     });
     // if real Supabase — upload
     if (!DEMO) {
-      files.forEach(async function(f){
-        try { var url=await uploadFile(f,'refs'); _refsDraft[_refsDraft.length-1]=url; renderRefs(); } catch(e){}
-      });
+     files.forEach(function(f){
+  var index = _refsDraft.length;
+
+  // сразу кладём "заглушку" чтобы занять позицию
+  _refsDraft.push('');
+
+  var rd = new FileReader();
+
+  rd.onload = async function(ev) {
+    try {
+      var url = await uploadFile(f, 'refs');
+
+      // кладём точно в ту же позицию
+      _refsDraft[index] = url;
+
+      renderRefs();
+    } catch(e) {
+      console.warn(e);
+    }
+  };
+
+  rd.readAsDataURL(f);
+});
     }
   });
 
