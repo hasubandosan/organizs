@@ -366,7 +366,7 @@ async function syncItemToPurchases(itemId, payload) {
 
     // Ищем существующую запись в purchases
     var existing = await sb.from('purchases')
-      .select('id').eq('source_module','cosplay').eq('source_item_id',itemId).single();
+      .select('id').eq('source_module','cosplay').eq('source_item_id',itemId)..maybeSingle();
 
     if (pref) {
       // Есть preferred вариант — создаём/обновляем запись в покупках
@@ -419,7 +419,13 @@ async function deleteItem(id) {
 
 async function uploadFile(file, folder) {
   var ext = file.name.split('.').pop();
-  var path = 'cosplay/'+folder+'/'+Date.now()+'.'+ext;
+var path =
+  'cosplay/' +
+  folder +
+  '/' +
+  crypto.randomUUID() +
+  '.' +
+  ext;
   var r = await sb.storage.from(BUCKET).upload(path,file,{upsert:true});
   if (r.error) throw r.error;
   return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
@@ -494,6 +500,64 @@ function showContent(html) {
   ge('emptyEl').style.display = 'none';
 }
 
+  function renderChars() {
+  if (!characters.length) {
+    showContent('');
+    return;
+  }
+
+  var html = characters.map(function(c, idx) {
+
+    var totalLooks = looks.filter(function(l){
+      return l.character_id === c.id;
+    }).length;
+
+    var prog = c.progress || 0;
+
+    var cover = c.cover_url
+      ? '<img src="' + esc(c.cover_url) + '" loading="lazy"/>'
+      : '🎭';
+
+    return (
+      '<div class="char-card" data-id="' + c.id + '" style="animation-delay:' + (idx * .04) + 's">' +
+        '<div class="char-cover">' +
+          cover +
+          '<div class="char-grad"></div>' +
+          '<div class="char-info">' +
+            '<div class="char-name">' + esc(c.name) + '</div>' +
+            '<div class="char-sub">' + esc(c.notes || '') + '</div>' +
+          '</div>' +
+          '<div class="char-prog-bar">' +
+            '<div class="char-prog-fill" style="width:' + prog + '%"></div>' +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
+
+  }).join('');
+
+  showContent('<div class="char-grid">' + html + '</div>');
+
+  ge('mainContent').querySelectorAll('.char-card').forEach(function(el) {
+
+    el.addEventListener('click', function() {
+
+      var char = characters.find(function(c){
+        return c.id === el.dataset.id;
+      });
+
+      gotoLooks(char);
+
+    });
+
+    el.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      openEditChar(el.dataset.id);
+    });
+
+  });
+}
+
 // ════════════════════════════════════════
 // RENDER LOOKS
 // ════════════════════════════════════════
@@ -530,6 +594,22 @@ function renderLooks() {
 // ════════════════════════════════════════
 // RENDER ITEMS
 // ════════════════════════════════════════
+function safeUrl(url) {
+  try {
+    var u = new URL(url);
+
+    if (
+      u.protocol === 'http:' ||
+      u.protocol === 'https:'
+    ) {
+      return u.href;
+    }
+
+  } catch(e) {}
+
+  return '#';
+}
+  
 function renderItems() {
   if (!items.length) { showContent(''); return; }
   var html = items.map(function(item, idx) {
@@ -540,7 +620,7 @@ function renderItems() {
     var isTxt = item.status==='have' ? 'Уже есть' : item.status==='make' ? 'Шить/делать' : 'Купить';
     var varHtml = vars.length ? '<div class="vars-strip">'
       + vars.map(function(v){
-          return '<a class="var-chip'+(v.is_preferred?' pref':'')+'" href="'+esc(v.url||'#')+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'
+          return '<a class="var-chip'+(v.is_preferred?' pref':'')+'" href="'+esc(safeUrl(v.url))+'" target="_blank" rel="noopener" onclick="event.stopPropagation()">'
             + esc(v.shop_name||'Магазин')
             + (v.price ? ' · <span class="var-price">'+fmtP(v.price)+'</span>' : '')
             + (v.is_preferred ? ' ⭐' : '')
