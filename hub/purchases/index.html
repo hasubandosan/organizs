@@ -78,9 +78,10 @@
     .search-box input{flex:1;font-size:14px}
     .search-box input::placeholder{color:var(--muted)}
     .grid-ctrl{display:flex;align-items:center;gap:4px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:6px 10px}
-    .grid-ctrl span{font-size:12px;color:var(--muted);font-family:var(--mono)}
+    .grid-ctrl span{font-size:12px;color:var(--muted);font-family:var(--mono);min-width:12px;text-align:center}
     .grid-btn{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--s3);font-size:14px;color:var(--dim);transition:all .15s}
     .grid-btn:hover{color:var(--accent)}
+    .grid-btn:disabled{opacity:.3;pointer-events:none}
 
     /* ── STATS STRIP ── */
     .stats-strip{display:flex;gap:8px;padding:0 16px 10px;overflow-x:auto;scrollbar-width:none}
@@ -111,57 +112,75 @@
     .empty-txt{font-size:13px;font-weight:500}
     @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
+    /* ── ROOT DROP (unset zone / un-nest) ── */
+    .root-drop{
+      border:1px dashed var(--border);color:var(--muted);font-size:11px;text-align:center;
+      padding:8px;margin-bottom:12px;border-radius:var(--r);transition:all .15s;
+    }
+    .root-drop.drag-over{border-color:var(--accent);color:var(--accent);background:rgba(212,245,66,.06)}
+
+    .loose-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-family:var(--mono);padding:2px 4px 8px;display:flex;align-items:center;gap:8px}
+    .loose-title .zdivider{flex:1;height:1px;background:var(--border)}
+    .root-loose{margin-bottom:18px}
+    .zones-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-family:var(--mono);padding:2px 4px 8px;display:flex;align-items:center;gap:8px}
+    .zones-title .zdivider{flex:1;height:1px;background:var(--border)}
+
     /* ── ZONE TREE ── */
-    .zone-node{margin-bottom:10px}
-    .zone-node.root-loose{margin-top:4px}
+    .zone-node{margin-bottom:10px;transition:opacity .15s}
+    .zone-node.dragging{opacity:.35}
     .zone-card{border:1px solid var(--border);border-radius:var(--r);background:rgba(212,245,66,.02);border-left:3px solid var(--accent);overflow:hidden}
-    .zone-head{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:pointer}
+    .zone-head{display:flex;align-items:center;gap:7px;padding:10px 8px 10px 12px;cursor:grab;flex-wrap:wrap}
+    .zone-head:active{cursor:grabbing}
     .zone-head:hover{background:rgba(212,245,66,.04)}
+    .zone-head.drag-over{background:rgba(212,245,66,.14);outline:1px dashed var(--accent);outline-offset:-1px}
     .zone-chevron{color:var(--muted);font-size:11px;transition:transform .15s;flex-shrink:0}
     .zone-node.open > .zone-card > .zone-head .zone-chevron{transform:rotate(90deg)}
     .zone-emoji{font-size:15px;flex-shrink:0}
-    .zone-name{font-size:13px;font-weight:700;letter-spacing:.2px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .zone-name{font-size:13px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:38vw}
     .zone-count{font-family:var(--mono);font-size:11px;color:var(--muted);flex-shrink:0}
-    .zone-sum{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700;flex-shrink:0}
+    .zone-prio-badge{font-family:var(--mono);font-size:10px;color:var(--orange);flex-shrink:0;background:rgba(255,112,67,.12);padding:1px 6px;border-radius:100px}
+    .zone-sum{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700;flex-shrink:0;margin-left:auto}
     .zone-actions{display:flex;gap:4px;flex-shrink:0}
-    .zone-actions button{width:24px;height:24px;border-radius:7px;background:var(--s3);color:var(--dim);font-size:13px;display:flex;align-items:center;justify-content:center}
+    .zone-actions button{width:25px;height:25px;border-radius:7px;background:var(--s3);color:var(--dim);font-size:13px;display:flex;align-items:center;justify-content:center}
     .zone-actions button:hover{color:var(--accent)}
+    .zone-actions button.danger:hover{color:var(--danger)}
     .zone-body{display:none;padding:2px 10px 12px 10px}
     .zone-node.open > .zone-card > .zone-body{display:block}
     .zone-children{margin-left:10px;padding-left:10px;border-left:1px dashed var(--border);margin-top:8px}
     .zone-empty{font-size:12px;color:var(--muted);padding:8px 4px}
-    .loose-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-family:var(--mono);padding:6px 4px 8px}
 
     /* ── PRODUCT CARD GRID (gallery) ── */
-    .product-grid{display:grid;gap:10px;grid-template-columns:repeat(var(--cols,2),1fr)}
+    .product-grid{display:grid;gap:8px;grid-template-columns:repeat(var(--cols,7),1fr)}
     .product-card{
-      position:relative;min-width:0;overflow:hidden;cursor:pointer;
-      border:1px solid var(--border);border-radius:16px;
+      position:relative;min-width:0;overflow:hidden;cursor:grab;
+      border:1px solid var(--border);border-radius:14px;
       background:var(--card);color:var(--card-ink);
       display:flex;flex-direction:column;
       box-shadow:0 6px 16px rgba(0,0,0,.25);
-      transition:transform .15s ease,box-shadow .15s ease;
+      transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease;
       animation:fadeUp .2s ease both;
     }
-    .product-card:active{transform:scale(.97)}
-    .product-card.done{opacity:.55}
+    .product-card:active{cursor:grabbing}
+    .product-card.dragging{opacity:.35}
     .product-card.favorite{border-color:rgba(212,245,66,.7)}
-    .pc-image{position:relative;aspect-ratio:1.15/1;overflow:hidden;background:#d8dbd2}
+    .product-card.done .pc-name{text-decoration:line-through;color:var(--card-soft)}
+    .pc-image{position:relative;aspect-ratio:1.05/1;overflow:hidden;background:#d8dbd2}
     .pc-image img{width:100%;height:100%;object-fit:cover;display:block}
-    .pc-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:26px;background:linear-gradient(145deg,#e1e3dc,#c8cdc1)}
-    .pc-price{position:absolute;top:8px;right:8px;z-index:3;padding:4px 9px;border-radius:0 10px 0 10px;background:rgba(249,249,241,.95);color:#161a11;font-size:13px;font-weight:800;font-family:var(--mono)}
-    .pc-cosplay{position:absolute;top:8px;left:8px;z-index:3;background:rgba(167,139,250,.88);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;letter-spacing:.03em}
-    .pc-prio{position:absolute;bottom:8px;left:8px;z-index:3;width:8px;height:8px;border-radius:50%}
+    .pc-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;background:linear-gradient(145deg,#e1e3dc,#c8cdc1)}
+    .pc-price{position:absolute;top:6px;right:6px;z-index:3;padding:3px 7px;border-radius:0 8px 0 8px;background:rgba(249,249,241,.95);color:#161a11;font-size:11px;font-weight:800;font-family:var(--mono)}
+    .pc-cosplay{position:absolute;top:6px;left:6px;z-index:3;background:rgba(167,139,250,.88);color:#fff;font-size:8px;font-weight:700;padding:2px 5px;border-radius:5px;letter-spacing:.02em}
+    .pc-prio{position:absolute;bottom:6px;left:6px;z-index:3;width:7px;height:7px;border-radius:50%}
     .pc-prio.p2{background:var(--orange)}
     .pc-prio.p1{background:var(--accent)}
-    .pc-info{padding:8px 9px 9px}
-    .pc-name{font-size:13px;line-height:1.2;font-weight:750;letter-spacing:-.01em;color:var(--card-ink);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-height:2.3em;margin-bottom:4px}
-    .pc-meta{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--card-soft)}
-    .pc-status-dot{width:6px;height:6px;border-radius:50%;background:#a7ab9b;flex-shrink:0}
+    .pc-done-overlay{position:absolute;inset:0;z-index:4;background:var(--card);opacity:.8}
+    .pc-done-check{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center}
+    .pc-done-check span{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#0c0c0c;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;box-shadow:0 4px 10px rgba(0,0,0,.35)}
+    .pc-info{padding:6px 7px 7px}
+    .pc-name{font-size:11px;line-height:1.2;font-weight:700;letter-spacing:-.01em;color:var(--card-ink);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-height:2.2em;margin-bottom:3px}
+    .pc-meta{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--card-soft)}
+    .pc-status-dot{width:5px;height:5px;border-radius:50%;background:#a7ab9b;flex-shrink:0}
     .pc-status-dot.ordered{background:var(--orange)}
     .pc-status-dot.done{background:#6c9a1f}
-    .pc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px}
-    .pc-tag{padding:2px 7px;border-radius:999px;background:#e1e5d9;color:#4f5549;font-size:9px;font-weight:600}
 
     /* ── LIST VIEW (flat, grouped by full zone path) ── */
     .cat-group{margin-bottom:20px}
@@ -208,32 +227,57 @@
     .fab:active{transform:scale(.9);box-shadow:0 2px 10px rgba(212,245,66,.2)}
     .fab.rot{transform:rotate(45deg)}
 
-    /* ── OVERLAY & SHEET ── */
+    /* ── OVERLAY ── */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(6px)}
     .overlay.on{opacity:1;pointer-events:all}
-    .sheet{
-      position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-radius:var(--rL) var(--rL) 0 0;
-      border-top:1px solid var(--border);z-index:101;max-height:94dvh;display:flex;flex-direction:column;
-      transform:translateY(100%);transition:transform .32s cubic-bezier(.16,1,.3,1);
-    }
-    .sheet.on{transform:translateY(0)}
-    .sheet-drag{width:36px;height:4px;background:var(--border);border-radius:4px;margin:12px auto 0;flex-shrink:0}
-    .sheet-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;flex-shrink:0}
-    .sheet-title{font-size:16px;font-weight:700}
-    .close-btn{width:30px;height:30px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:16px}
-    .sheet-scroll{overflow-y:auto;padding:0 18px 44px;flex:1;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 
-    /* ── centered mini-modal (zone/variant add-edit) ── */
-    .mbackdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+    /* ── centered modal (zone/variant/edit/quick-add) ── */
+    .mbackdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
     .mbackdrop.on{display:flex}
-    .mmodal{background:var(--s1);border:1px solid var(--border);border-radius:var(--rL);width:100%;max-width:380px;max-height:88dvh;overflow-y:auto;padding:18px}
+    .mmodal{background:var(--s1);border:1px solid var(--border);border-radius:var(--rL);width:100%;max-width:380px;max-height:90dvh;overflow-y:auto;padding:18px}
+    .mmodal.wide{max-width:640px}
     .mmodal h3{font-size:15px;font-weight:700;margin-bottom:14px}
     .mmodal .btn-row{display:flex;gap:8px;margin-top:16px}
     .mmodal .btn-row button{flex:1;padding:11px;border-radius:var(--r);font-size:13px;font-weight:700}
     .mmodal .btn-cancel{background:var(--s2);border:1px solid var(--border);color:var(--dim)}
     .mmodal .btn-primary{background:var(--accent);color:#000}
+    .mmodal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+    .mmodal-hdr h3{margin:0;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .mclose{width:28px;height:28px;border-radius:8px;background:var(--s3);color:var(--dim);font-size:15px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 
-    /* ── FORM ── */
+    /* ── PRODUCT DETAIL MODAL (compact, image + variants w/ hover preview) ── */
+    .detail-layout{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:640px){ .detail-layout{grid-template-columns:220px 1fr} }
+    .detail-main-image{aspect-ratio:1/1;border-radius:var(--r);overflow:hidden;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center}
+    .detail-main-image img{width:100%;height:100%;object-fit:cover;cursor:zoom-in}
+    .detail-main-placeholder{font-size:40px;color:var(--muted)}
+    .detail-title{font-size:16px;font-weight:700;margin-bottom:3px}
+    .detail-count{font-size:12px;color:var(--muted);margin-bottom:4px}
+    .detail-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+    .detail-badge{font-size:10px;padding:3px 8px;border-radius:100px;background:var(--s3);color:var(--dim);font-weight:600}
+    .detail-badge.p2{background:rgba(255,112,67,.15);color:var(--orange)}
+    .detail-badge.p1{background:rgba(212,245,66,.12);color:var(--accent)}
+    .detail-badge.cosplay{background:rgba(167,139,250,.15);color:var(--purple)}
+    .detail-variants{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+    .detail-variant{display:grid;grid-template-columns:42px 1fr auto auto;gap:8px;align-items:center;padding:7px;border:1px solid var(--border);border-radius:9px;background:var(--s2);transition:border-color .15s}
+    .detail-variant.favorite{border-color:var(--accent);background:rgba(212,245,66,.06)}
+    .detail-variant-photo{width:42px;height:42px;object-fit:cover;border-radius:7px;background:var(--s3);cursor:zoom-in}
+    .detail-variant-placeholder{width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:7px;background:var(--s3);color:var(--muted);font-size:14px}
+    .detail-variant-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+    .detail-variant-note{font-size:10px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .detail-variant-price{font-size:12px;font-weight:700;white-space:nowrap;font-family:var(--mono)}
+    .detail-variant-actions{display:flex;gap:1px}
+    .detail-icon{border:0;background:none;color:var(--muted);cursor:pointer;padding:4px;font-size:13px;border-radius:6px}
+    .detail-icon:hover{color:var(--accent);background:var(--s3)}
+    .detail-icon.fav{color:var(--accent)}
+    .detail-icon.danger:hover{color:var(--danger)}
+    .detail-empty{font-size:12px;color:var(--muted);padding:8px 2px}
+    .detail-footer{display:flex;gap:8px;flex-wrap:wrap}
+    .detail-footer button{padding:9px 13px;border-radius:var(--r);font-size:12px;font-weight:700;border:1px solid var(--border);background:var(--s2);color:var(--text)}
+    .detail-footer button.primary{background:var(--accent);color:#000;border-color:var(--accent)}
+    .detail-footer button.danger{color:var(--danger);border-color:rgba(239,83,80,.3)}
+
+    /* ── FORM (edit / quick-add / zone) ── */
     .fg{margin-bottom:14px}
     .fl{display:block;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;font-family:var(--mono)}
     .fi{width:100%;padding:11px 13px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);font-size:14px;color:var(--text);transition:border-color .15s}
@@ -243,7 +287,7 @@
     .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     select.fi{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235a5a5a' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
 
-    /* combobox (category/shop) */
+    /* combobox (shop) */
     .cat-combo{position:relative}
     .cat-combo input{padding-right:32px}
     .cat-dropdown{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--s2);border:1px solid var(--border);border-radius:var(--r);z-index:10;max-height:180px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,.4)}
@@ -272,7 +316,7 @@
     .tags-wrap input::placeholder{color:var(--muted)}
 
     /* image upload */
-    .img-up{width:100%;height:120px;border-radius:var(--r);border:1.5px dashed var(--border);background:var(--s2);display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .15s}
+    .img-up{width:100%;height:110px;border-radius:var(--r);border:1.5px dashed var(--border);background:var(--s2);display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:13px;cursor:pointer;position:relative;overflow:hidden;transition:border-color .15s}
     .img-up:hover{border-color:var(--accent)}
     .img-up img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
     .img-up .img-mask{position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;font-size:13px;opacity:0;transition:opacity .15s}
@@ -282,28 +326,24 @@
     .btn-save{width:100%;padding:14px;background:var(--accent);color:#000;border-radius:var(--r);font-size:14px;font-weight:800;font-family:var(--mono);letter-spacing:.3px;transition:transform .1s;margin-top:6px}
     .btn-save:active{transform:scale(.98)}
     .btn-save:disabled{opacity:.4;pointer-events:none}
-    .btn-del{width:100%;padding:12px;border:1px solid rgba(239,83,80,.25);color:var(--danger);border-radius:var(--r);font-size:13px;font-weight:600;transition:background .15s;margin-top:6px}
+    .btn-del{width:100%;padding:12px;border:1px solid rgba(239,83,80,.25);color:var(--danger);border-radius:var(--r);font-size:13px;font-weight:600;transition:background .15s;margin-top:10px}
     .btn-del:hover{background:rgba(239,83,80,.08)}
-    .btn-add-sm{padding:10px 16px;background:var(--s3);border:1px solid var(--border);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--accent);transition:background .15s;flex-shrink:0}
-    .btn-add-sm:hover{background:var(--s2)}
 
-    /* ── VARIANTS block inside product sheet ── */
-    .variants-hdr{display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px;padding-top:14px;border-top:1px solid var(--border)}
-    .variants-hdr h4{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--dim)}
-    .variant-row{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px;margin-bottom:8px}
-    .variant-thumb{width:40px;height:40px;border-radius:8px;background:var(--s3);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px}
-    .variant-thumb img{width:100%;height:100%;object-fit:cover}
-    .variant-info{flex:1;min-width:0}
-    .variant-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .variant-meta{font-size:11px;color:var(--muted);font-family:var(--mono)}
-    .variant-btns{display:flex;gap:4px;flex-shrink:0}
-    .variant-btns button{width:26px;height:26px;border-radius:7px;background:var(--s3);color:var(--dim);font-size:13px;display:flex;align-items:center;justify-content:center}
-    .variant-btns button.fav.on{background:rgba(212,245,66,.15);color:var(--accent)}
-    .variant-btns button:hover{color:var(--accent)}
-    .variant-empty{font-size:12px;color:var(--muted);padding:6px 2px 2px}
-
-    /* zones manage sheet */
-    .zman-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px}
+    /* zones manage sheet (full list, still available for bulk ops) */
+    .sheet{
+      position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-radius:var(--rL) var(--rL) 0 0;
+      border-top:1px solid var(--border);z-index:101;max-height:94dvh;display:flex;flex-direction:column;
+      transform:translateY(100%);transition:transform .32s cubic-bezier(.16,1,.3,1);
+    }
+    .sheet.on{transform:translateY(0)}
+    .sheet-drag{width:36px;height:4px;background:var(--border);border-radius:4px;margin:12px auto 0;flex-shrink:0}
+    .sheet-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px;flex-shrink:0}
+    .sheet-title{font-size:16px;font-weight:700}
+    .close-btn{width:30px;height:30px;border-radius:8px;background:var(--s3);display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:16px}
+    .sheet-scroll{overflow-y:auto;padding:0 18px 44px;flex:1;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+    .zman-row{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--s2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;cursor:grab}
+    .zman-row.dragging{opacity:.35}
+    .zman-row.drag-over{outline:1px dashed var(--accent);background:rgba(212,245,66,.08)}
     .zman-emoji{font-size:17px;width:24px;text-align:center;flex-shrink:0}
     .zman-name{flex:1;font-size:13px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .zman-count{font-size:11px;color:var(--muted);font-family:var(--mono);flex-shrink:0}
@@ -313,9 +353,13 @@
     .mod-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
     .mod-pill{padding:6px 11px;border-radius:100px;font-size:12px;border:1px solid var(--border);background:var(--s2);color:var(--muted)}
     .mod-pill.on{background:rgba(212,245,66,.12);color:var(--accent);border-color:var(--accent)}
+    .btn-add-sm{padding:10px 16px;background:var(--s3);border:1px solid var(--border);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--accent);transition:background .15s;flex-shrink:0}
+    .btn-add-sm:hover{background:var(--s2)}
+    .zman-root-drop{border:1px dashed var(--border);color:var(--muted);font-size:11px;text-align:center;padding:8px;margin-bottom:10px;border-radius:var(--r);transition:all .15s}
+    .zman-root-drop.drag-over{border-color:var(--accent);color:var(--accent);background:rgba(212,245,66,.06)}
 
     /* toast */
-    .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0));transform:translateX(-50%) translateY(20px);background:var(--s2);border:1px solid var(--border);border-radius:100px;padding:9px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s;z-index:300;pointer-events:none}
+    .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0));transform:translateX(-50%) translateY(20px);background:var(--s2);border:1px solid var(--border);border-radius:100px;padding:9px 18px;font-size:13px;font-weight:500;white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s;z-index:300;pointer-events:none;max-width:88vw;overflow:hidden;text-overflow:ellipsis}
     .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
     .toast.ok{border-color:var(--accent);color:var(--accent)}
     .toast.err{border-color:var(--danger);color:var(--danger)}
@@ -335,7 +379,7 @@
       <div class="hdr-actions">
         <button class="icon-btn" id="btnViewList" title="Список">☰</button>
         <button class="icon-btn active" id="btnViewGallery" title="Зоны">⊞</button>
-        <button class="icon-btn" id="btnManageZones" title="Зоны">🗂</button>
+        <button class="icon-btn" id="btnManageZones" title="Все зоны">🗂</button>
         <button class="icon-btn" id="btnSync" title="Обновить">⟳</button>
       </div>
     </div>
@@ -354,7 +398,7 @@
       </div>
       <div class="grid-ctrl" id="gridCtrl">
         <button class="grid-btn" id="gridMinus">−</button>
-        <span id="gridColsLabel">2</span>
+        <span id="gridColsLabel">7</span>
         <button class="grid-btn" id="gridPlus">+</button>
       </div>
     </div>
@@ -393,87 +437,120 @@
   </div>
 </div>
 
-<!-- OVERLAY -->
+<!-- OVERLAY (for bottom sheets) -->
 <div class="overlay" id="overlay"></div>
 
-<!-- PRODUCT FORM SHEET -->
-<div class="sheet" id="formSheet">
+<!-- ZONES MANAGE SHEET (full flat list, bulk view) -->
+<div class="sheet" id="manageSheet">
   <div class="sheet-drag"></div>
   <div class="sheet-hdr">
-    <div class="sheet-title" id="formTitle">Новая покупка</div>
-    <button class="close-btn" id="formClose">✕</button>
+    <div class="sheet-title">Все зоны</div>
+    <button class="close-btn" id="manageClose">✕</button>
   </div>
   <div class="sheet-scroll">
+    <div class="zman-root-drop" id="zmanRootDrop">перетащите сюда, чтобы вынести зону в корень</div>
+    <div id="zoneManageList"></div>
+    <button class="btn-add-sm" id="btnAddRootZone" style="width:100%;margin-top:6px">+ Добавить корневую зону</button>
+  </div>
+</div>
+
+<!-- PRODUCT DETAIL MODAL (compact, image + variants, hover preview) -->
+<div class="mbackdrop" id="detailBackdrop">
+  <div class="mmodal wide">
+    <div class="mmodal-hdr">
+      <h3 id="detailTitleTop">Товар</h3>
+      <button class="mclose" id="detailClose">✕</button>
+    </div>
+    <div class="detail-layout">
+      <div class="detail-main-image" id="detailMainImageWrap">
+        <div class="detail-main-placeholder">🛍️</div>
+      </div>
+      <div>
+        <div class="detail-title" id="detailTitle"></div>
+        <div class="detail-count" id="detailCount"></div>
+        <div class="detail-badges" id="detailBadges"></div>
+        <div class="detail-variants" id="detailVariants"></div>
+        <div class="detail-footer">
+          <button class="primary" id="detailAddVariant">＋ Вариант</button>
+          <button id="detailEditProduct">✎ Редактировать</button>
+          <button class="danger" id="detailDelProduct">🗑 Удалить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT EDIT MODAL (basic fields) -->
+<div class="mbackdrop" id="editBackdrop">
+  <div class="mmodal">
+    <div class="mmodal-hdr">
+      <h3>Редактировать товар</h3>
+      <button class="mclose" id="editClose">✕</button>
+    </div>
     <div class="fg">
       <label class="fl">Название *</label>
-      <input id="fName" class="fi" type="text" placeholder="Что купить?"/>
+      <input id="eName" class="fi" type="text" placeholder="Что купить?"/>
     </div>
-
     <div class="fg">
       <label class="fl">Зона</label>
-      <select id="fZone" class="fi"><option value="">— без зоны —</option></select>
+      <select id="eZone" class="fi"><option value="">— без зоны —</option></select>
     </div>
-
     <div class="fg">
       <label class="fl">Приоритет</label>
       <div class="prio-sel" id="prioSel">
-        <button class="prio-opt" data-p="2">🔴 СРОЧНО</button>
-        <button class="prio-opt" data-p="1">📅 ПЛАН</button>
-        <button class="prio-opt" data-p="0">○ ОБЫЧНЫЙ</button>
+        <button type="button" class="prio-opt" data-p="2">🔴 СРОЧНО</button>
+        <button type="button" class="prio-opt" data-p="1">📅 ПЛАН</button>
+        <button type="button" class="prio-opt" data-p="0">○ ОБЫЧНЫЙ</button>
       </div>
     </div>
-
     <div class="fg">
       <label class="fl">Статус</label>
       <div class="status-sel" id="statusSel">
-        <button class="status-opt" data-sv="want">Хочу</button>
-        <button class="status-opt" data-sv="ordered">Заказано</button>
-        <button class="status-opt" data-sv="done">Куплено</button>
+        <button type="button" class="status-opt" data-sv="want">Хочу</button>
+        <button type="button" class="status-opt" data-sv="ordered">Заказано</button>
+        <button type="button" class="status-opt" data-sv="done">Куплено</button>
       </div>
     </div>
-
     <div class="fg">
       <label class="fl">Теги</label>
       <div class="tags-wrap" id="tagsWrap">
         <input id="tagIn" type="text" placeholder="тег + Enter"/>
       </div>
     </div>
-
     <div class="fg">
       <label class="fl">Заметка</label>
-      <textarea id="fNotes" class="fi" placeholder="Дополнительно..."></textarea>
+      <textarea id="eNotes" class="fi" placeholder="Дополнительно..."></textarea>
     </div>
-
-    <button class="btn-save" id="btnSave">Сохранить</button>
-    <button class="btn-del" id="btnDel" style="display:none">Удалить товар</button>
-
-    <div id="variantsSection" style="display:none">
-      <div class="variants-hdr">
-        <h4>Варианты</h4>
-        <button class="btn-add-sm" id="btnAddVariant">+ Вариант</button>
-      </div>
-      <div id="variantsList"></div>
-    </div>
+    <button class="btn-save" id="btnSaveEdit">Сохранить</button>
   </div>
 </div>
 
-<!-- ZONES MANAGE SHEET -->
-<div class="sheet" id="manageSheet">
-  <div class="sheet-drag"></div>
-  <div class="sheet-hdr">
-    <div class="sheet-title">Зоны</div>
-    <button class="close-btn" id="manageClose">✕</button>
-  </div>
-  <div class="sheet-scroll">
-    <div id="zoneManageList"></div>
-    <button class="btn-add-sm" id="btnAddRootZone" style="width:100%;margin-top:6px">+ Добавить корневую зону</button>
+<!-- QUICK ADD PRODUCT MODAL -->
+<div class="mbackdrop" id="quickAddBackdrop">
+  <div class="mmodal">
+    <div class="mmodal-hdr">
+      <h3>Новый товар</h3>
+      <button class="mclose" id="quickAddClose">✕</button>
+    </div>
+    <div class="fg">
+      <label class="fl">Название *</label>
+      <input id="qaName" class="fi" type="text" placeholder="Что купить?" autofocus/>
+    </div>
+    <div class="fg" id="qaZoneRow" style="display:none">
+      <label class="fl">Зона</label>
+      <div id="qaZoneLabel" style="font-size:13px;color:var(--accent);font-weight:600"></div>
+    </div>
+    <button class="btn-save" id="btnQuickAddSave">Создать</button>
   </div>
 </div>
 
 <!-- ZONE ADD/EDIT MODAL -->
 <div class="mbackdrop" id="zoneModalBackdrop">
   <div class="mmodal">
-    <h3 id="zoneModalTitle">Новая зона</h3>
+    <div class="mmodal-hdr">
+      <h3 id="zoneModalTitle">Новая зона</h3>
+      <button class="mclose" id="zoneModalClose">✕</button>
+    </div>
     <div class="fg">
       <label class="fl">Название *</label>
       <input id="zName" class="fi" type="text" placeholder="Название зоны"/>
@@ -500,13 +577,17 @@
       <button class="btn-cancel" id="zoneModalCancel">Отмена</button>
       <button class="btn-primary" id="zoneModalSave">Сохранить</button>
     </div>
+    <button class="btn-del" id="zoneModalDel" style="display:none">Удалить зону</button>
   </div>
 </div>
 
 <!-- VARIANT ADD/EDIT MODAL -->
 <div class="mbackdrop" id="variantModalBackdrop">
   <div class="mmodal">
-    <h3 id="variantModalTitle">Новый вариант</h3>
+    <div class="mmodal-hdr">
+      <h3 id="variantModalTitle">Новый вариант</h3>
+      <button class="mclose" id="variantModalClose">✕</button>
+    </div>
     <div class="fg">
       <label class="fl">Фото</label>
       <div class="img-up" id="vImgUp">
@@ -578,19 +659,22 @@ let filterStatus = 'all';
 let searchQ       = '';
 let sortMode      = 'priority';
 let viewMode      = 'gallery'; // 'list' | 'gallery'
-let gridCols      = 2;
+let gridCols      = 7;         // 4..8
 
-let editId        = null;   // product id being edited (null = new)
-let curTags       = [];
-let curPriority   = 1;
-let curStatus     = 'want';
+let currentProductId = null;  // product open in detail modal
+let editProductId    = null;  // product open in edit modal (null = n/a)
 
-let editingVariant = null;  // variant object being edited (null = new)
-let variantImgFile = null;
-let variantImgUrl  = null;
-let variantFav      = false;
+let editingVariant  = null;   // variant object being edited (null = new)
+let variantImgFile  = null;
+let variantImgUrl   = null;
+let variantFav       = false;
 
-let editingZone    = null;  // zone object being edited (null = new)
+let editingZone      = null;  // zone object being edited (null = new)
+let quickAddZoneId   = null;  // zone context for quick-add modal
+
+let curTags     = [];
+let curPriority = 1;
+let curStatus   = 'want';
 
 // ── ELEMENTS ──────────────────────────────────────
 const $  = id => document.getElementById(id);
@@ -630,21 +714,19 @@ async function loadAll() {
 }
 
 // ── PRODUCTS CRUD ──
-async function upsertProduct(payload) {
-  if (editId) {
-    const item = products.find(i => i.id === editId);
-    if (item && item.source_module === 'cosplay') {
-      toast('Косплей-предмет — редактируй в модуле Косплея', 'err'); throw new Error('locked');
-    }
-    if (DEMO_MODE) { Object.assign(item, payload); return editId; }
-    const { error } = await sb.from('products').update(payload).eq('id', editId);
+async function saveProduct(id, payload) {
+  if (id) {
+    const item = products.find(i => i.id === id);
+    if (item && item.source_module === 'cosplay') { toast('Косплей-предмет — редактируй в модуле Косплея', 'err'); throw new Error('locked'); }
+    if (DEMO_MODE) { Object.assign(item, payload); return id; }
+    const { error } = await sb.from('products').update(payload).eq('id', id);
     if (error) throw error;
-    return editId;
+    return id;
   } else {
     if (DEMO_MODE) {
-      const id = 'p' + Date.now();
-      products.push({ id, module: 'shopping', created_at: new Date().toISOString(), ...payload });
-      return id;
+      const nid = 'p' + Date.now();
+      products.push({ id: nid, module: 'shopping', created_at: new Date().toISOString(), ...payload });
+      return nid;
     }
     const { data, error } = await sb.from('products').insert({ ...payload, module: 'shopping' }).select().single();
     if (error) throw error;
@@ -652,11 +734,21 @@ async function upsertProduct(payload) {
     return data.id;
   }
 }
+async function moveProductZone(productId, zoneId) {
+  const item = products.find(i => i.id === productId);
+  if (!item) return;
+  if (item.source_module === 'cosplay') { toast('Косплей-предмет — перемещай в модуле Косплея', 'err'); return; }
+  if (!DEMO_MODE) {
+    const { error } = await sb.from('products').update({ zone_id: zoneId }).eq('id', productId);
+    if (error) { toast('Ошибка: ' + error.message, 'err'); return; }
+  }
+  item.zone_id = zoneId;
+  render();
+  toast('Перемещено ✓', 'ok');
+}
 async function removeProduct(id) {
   const item = products.find(i => i.id === id);
-  if (item && item.source_module === 'cosplay') {
-    toast('Косплей-предмет — удаляй в модуле Косплея', 'err'); return;
-  }
+  if (item && item.source_module === 'cosplay') { toast('Косплей-предмет — удаляй в модуле Косплея', 'err'); return; }
   if (!DEMO_MODE) {
     const { error } = await sb.from('products').delete().eq('id', id);
     if (error) throw error;
@@ -714,13 +806,27 @@ async function upsertZone(payload, id) {
     if (z) Object.assign(z, payload);
   } else {
     if (DEMO_MODE) {
-      zones.push({ id: 'z' + Date.now(), module: 'shopping', ...payload });
+      zones.push({ id: 'z' + Date.now(), module: 'shopping', _open: true, ...payload });
     } else {
       const { data, error } = await sb.from('zones').insert({ module: 'shopping', ...payload }).select().single();
       if (error) throw error;
+      data._open = true;
       zones.push(data);
     }
   }
+}
+async function moveZoneParent(zoneId, parentId) {
+  if (zoneId === parentId) return;
+  if (parentId && isDescendantOf(parentId, zoneId)) { toast('Нельзя переместить зону саму в себя', 'err'); return; }
+  if (!DEMO_MODE) {
+    const { error } = await sb.from('zones').update({ parent_id: parentId }).eq('id', zoneId);
+    if (error) { toast('Ошибка: ' + error.message, 'err'); return; }
+  }
+  const z = zoneById(zoneId);
+  if (z) z.parent_id = parentId;
+  render();
+  renderZoneManageList();
+  toast('Перемещено ✓', 'ok');
 }
 async function removeZone(id) {
   if (zoneChildren(id).length) { toast('Сначала удали или перенеси подзоны', 'err'); return false; }
@@ -773,8 +879,20 @@ function sumZone(zoneId) {
   zoneChildren(zoneId).forEach(z => s += sumZone(z.id));
   return s;
 }
+function countHighPriorityInZone(zoneId) {
+  let c = products.filter(p => (p.zone_id || null) === zoneId && p.priority === 2 && p.status !== 'done').length;
+  zoneChildren(zoneId).forEach(z => c += countHighPriorityInZone(z.id));
+  return c;
+}
+function isDescendantOf(zoneId, ancestorId) {
+  let z = zoneById(zoneId);
+  while (z && z.parent_id) {
+    if (z.parent_id === ancestorId) return true;
+    z = zoneById(z.parent_id);
+  }
+  return false;
+}
 function zoneMatchesFilters(zoneId, visibleIds) {
-  // true if this zone or any descendant zone contains a visible product
   if (products.some(p => (p.zone_id || null) === zoneId && visibleIds.has(p.id))) return true;
   return zoneChildren(zoneId).some(z => zoneMatchesFilters(z.id, visibleIds));
 }
@@ -833,20 +951,33 @@ function renderGallery(list) {
   const root = document.createElement('div');
   root.style.setProperty('--cols', gridCols);
 
-  zoneChildren(null).forEach(z => {
-    if (zoneMatchesFilters(z.id, visibleIds)) root.appendChild(renderZoneNode(z, visibleIds));
-  });
+  // 1) root drop target (unset zone / un-nest)
+  const rootDrop = document.createElement('div');
+  rootDrop.className = 'root-drop';
+  rootDrop.textContent = 'перетащите сюда, чтобы убрать зону';
+  attachDropTarget(rootDrop, null);
+  root.appendChild(rootDrop);
 
+  // 2) товары без зоны — первыми
   const loose = list.filter(p => !p.zone_id);
   if (loose.length) {
     const wrap = document.createElement('div');
     wrap.className = 'root-loose';
-    wrap.innerHTML = `<div class="loose-title">Без зоны</div>`;
+    wrap.innerHTML = `<div class="loose-title">📦 Без зоны <span class="zdivider"></span></div>`;
     wrap.appendChild(buildProductGrid(loose));
     root.appendChild(wrap);
   }
 
-  if (!root.children.length) {
+  // 3) зоны
+  const topZones = zoneChildren(null).filter(z => zoneMatchesFilters(z.id, visibleIds));
+  if (topZones.length) {
+    const zwrap = document.createElement('div');
+    if (loose.length) zwrap.innerHTML = `<div class="zones-title">🗂 Зоны <span class="zdivider"></span></div>`;
+    topZones.forEach(z => zwrap.appendChild(renderZoneNode(z, visibleIds)));
+    root.appendChild(zwrap);
+  }
+
+  if (!loose.length && !topZones.length) {
     mainList.style.display = 'none';
     emptyEl.style.display  = 'flex';
     return;
@@ -861,7 +992,8 @@ function renderZoneNode(zone, visibleIds) {
   const card = document.createElement('div');
   card.className = 'zone-card';
 
-  const sum = sumZone(zone.id);
+  const sum  = sumZone(zone.id);
+  const hp   = countHighPriorityInZone(zone.id);
   const head = document.createElement('div');
   head.className = 'zone-head';
   head.innerHTML = `
@@ -869,12 +1001,25 @@ function renderZoneNode(zone, visibleIds) {
     <span class="zone-emoji">${zone.emoji || '📦'}</span>
     <span class="zone-name">${esc(zone.name)}</span>
     <span class="zone-count">${countProductsInZone(zone.id)}</span>
-    <span class="zone-sum">${sum ? fmtPrice(sum) : ''}</span>`;
-  head.addEventListener('click', () => { zone._open = !zone._open; render(); });
+    ${hp ? `<span class="zone-prio-badge">🔴 ${hp}</span>` : ''}
+    <span class="zone-sum">${sum ? fmtPrice(sum) : ''}</span>
+    <div class="zone-actions">
+      <button data-act="add" title="Добавить товар">＋</button>
+      <button data-act="edit" title="Редактировать зону">✎</button>
+    </div>`;
+  head.addEventListener('click', e => {
+    if (e.target.closest('[data-act]')) return;
+    zone._open = !zone._open; render(); saveUIState();
+  });
+  head.querySelector('[data-act="add"]').addEventListener('click', e => { e.stopPropagation(); openQuickAdd(zone.id); });
+  head.querySelector('[data-act="edit"]').addEventListener('click', e => { e.stopPropagation(); openZoneModal(zone, zone.parent_id); });
+  attachZoneDrag(head, zone.id);
+  attachDropTarget(head, zone.id);
   card.appendChild(head);
 
   const body = document.createElement('div');
   body.className = 'zone-body';
+  attachDropTarget(body, zone.id);
 
   const ownProducts = products.filter(p => p.zone_id === zone.id && visibleIds.has(p.id));
   if (ownProducts.length) body.appendChild(buildProductGrid(ownProducts));
@@ -899,7 +1044,9 @@ function renderZoneNode(zone, visibleIds) {
 function buildProductGrid(list) {
   const grid = document.createElement('div');
   grid.className = 'product-grid';
-  list.forEach(item => grid.appendChild(buildProductCard(item)));
+  // купленное — в конец зоны, порядок остальных не трогаем
+  const ordered = [...list].sort((a, b) => (a.status === 'done' ? 1 : 0) - (b.status === 'done' ? 1 : 0));
+  ordered.forEach(item => grid.appendChild(buildProductCard(item)));
   return grid;
 }
 
@@ -910,23 +1057,23 @@ function buildProductCard(item) {
   const p = item.priority ?? 1;
   const el = document.createElement('div');
   el.className = 'product-card' + (item.status === 'done' ? ' done' : '') + (fav ? ' favorite' : '');
-  const tags = (item.tags || []).slice(0, 3).map(t => `<span class="pc-tag">${esc(t)}</span>`).join('');
   el.innerHTML = `
     <div class="pc-image">
       ${image ? `<img src="${esc(image)}" loading="lazy"/>` : `<div class="pc-placeholder">🛍️</div>`}
       ${price ? `<div class="pc-price">${fmtPrice(price)}</div>` : ''}
-      ${item.source_module === 'cosplay' ? `<div class="pc-cosplay">🎭 КОС</div>` : ''}
+      ${item.source_module === 'cosplay' ? `<div class="pc-cosplay">🎭</div>` : ''}
       ${p ? `<div class="pc-prio p${p}"></div>` : ''}
+      ${item.status === 'done' ? `<div class="pc-done-overlay"></div><div class="pc-done-check"><span>✓</span></div>` : ''}
     </div>
     <div class="pc-info">
       <div class="pc-name">${esc(item.name)}</div>
       <div class="pc-meta">
         <span class="pc-status-dot ${item.status === 'ordered' ? 'ordered' : item.status === 'done' ? 'done' : ''}"></span>
-        <span>${variantCount(item.id)} вариант${variantCount(item.id) === 1 ? '' : 'а'}</span>
+        <span>${variantCount(item.id)}вар.</span>
       </div>
-      ${tags ? `<div class="pc-tags">${tags}</div>` : ''}
     </div>`;
-  el.addEventListener('click', () => openEdit(item.id));
+  el.addEventListener('click', e => { if (el.classList.contains('dragging')) return; openProductDetail(item.id); });
+  attachProductDrag(el, item.id);
   return el;
 }
 
@@ -937,7 +1084,11 @@ function renderList(list) {
     (groups[path] = groups[path] || []).push(item);
   });
 
-  mainList.innerHTML = Object.entries(groups).map(([path, grpItems]) => {
+  // без зоны — первой группой
+  const orderedPaths = Object.keys(groups).sort((a, b) => (a === '—' ? -1 : b === '—' ? 1 : a.localeCompare(b, 'ru')));
+
+  mainList.innerHTML = orderedPaths.map(path => {
+    const grpItems = groups[path];
     const catSum = grpItems.filter(i => i.status !== 'done').reduce((s, i) => s + (productPrice(i.id) || 0), 0);
     const zone = grpItems[0].zone_id ? zoneById(grpItems[0].zone_id) : null;
     const catEmoji = zone ? (zone.emoji || '📦') : '📦';
@@ -973,7 +1124,48 @@ function renderList(list) {
   }).join('');
 
   mainList.querySelectorAll('[data-id]').forEach(el => {
-    el.addEventListener('click', () => openEdit(el.dataset.id));
+    el.addEventListener('click', () => openProductDetail(el.dataset.id));
+  });
+}
+
+// ══════════════════════════════════════════════════
+// DRAG & DROP
+// ══════════════════════════════════════════════════
+function attachProductDrag(cardEl, productId) {
+  cardEl.setAttribute('draggable', 'true');
+  cardEl.addEventListener('dragstart', e => {
+    e.stopPropagation();
+    e.dataTransfer.setData('text/plain', 'product:' + productId);
+    e.dataTransfer.effectAllowed = 'move';
+    requestAnimationFrame(() => cardEl.classList.add('dragging'));
+  });
+  cardEl.addEventListener('dragend', () => cardEl.classList.remove('dragging'));
+}
+function attachZoneDrag(headEl, zoneId) {
+  headEl.setAttribute('draggable', 'true');
+  headEl.addEventListener('dragstart', e => {
+    e.stopPropagation();
+    e.dataTransfer.setData('text/plain', 'zone:' + zoneId);
+    e.dataTransfer.effectAllowed = 'move';
+    headEl.closest('.zone-node')?.classList.add('dragging');
+  });
+  headEl.addEventListener('dragend', () => headEl.closest('.zone-node')?.classList.remove('dragging'));
+}
+function attachDropTarget(el, targetZoneId) {
+  el.addEventListener('dragover', e => {
+    e.preventDefault(); e.stopPropagation();
+    e.dataTransfer.dropEffect = 'move';
+    el.classList.add('drag-over');
+  });
+  el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+  el.addEventListener('drop', e => {
+    e.preventDefault(); e.stopPropagation();
+    el.classList.remove('drag-over');
+    const raw = e.dataTransfer.getData('text/plain');
+    if (!raw) return;
+    const [kind, id] = raw.split(':');
+    if (kind === 'product') moveProductZone(id, targetZoneId);
+    else if (kind === 'zone') moveZoneParent(id, targetZoneId);
   });
 }
 
@@ -989,11 +1181,11 @@ function setView(mode) {
 }
 $('btnViewList').addEventListener('click', () => setView('list'));
 $('btnViewGallery').addEventListener('click', () => setView('gallery'));
-$('gridMinus').addEventListener('click', () => { if (gridCols > 2) { gridCols--; $('gridColsLabel').textContent = gridCols; render(); } });
-$('gridPlus').addEventListener('click',  () => { if (gridCols < 6) { gridCols++; $('gridColsLabel').textContent = gridCols; render(); } });
+$('gridMinus').addEventListener('click', () => { if (gridCols > 4) { gridCols--; $('gridColsLabel').textContent = gridCols; render(); } });
+$('gridPlus').addEventListener('click',  () => { if (gridCols < 8) { gridCols++; $('gridColsLabel').textContent = gridCols; render(); } });
 
 // ══════════════════════════════════════════════════
-// SHEET SYSTEM
+// SHEET SYSTEM (zones manage)
 // ══════════════════════════════════════════════════
 function openSheet(name) {
   $('overlay').classList.add('on');
@@ -1002,11 +1194,10 @@ function openSheet(name) {
 }
 function closeSheets() {
   $('overlay').classList.remove('on');
-  ['form', 'manage'].forEach(n => $(n + 'Sheet').classList.remove('on'));
+  $('manageSheet').classList.remove('on');
   document.body.style.overflow = '';
 }
 $('overlay').addEventListener('click', () => { closeSheets(); closeFabMenu(); });
-$('formClose').addEventListener('click', closeSheets);
 $('manageClose').addEventListener('click', closeSheets);
 
 // ══════════════════════════════════════════════════
@@ -1017,19 +1208,14 @@ $('fabToggle').addEventListener('click', () => {
   $('fabMenu').classList.toggle('on');
   $('fabToggle').classList.toggle('rot');
 });
-$('fabAddProduct').addEventListener('click', () => { closeFabMenu(); openAdd(); });
+$('fabAddProduct').addEventListener('click', () => { closeFabMenu(); openQuickAdd(null); });
 $('fabAddZone').addEventListener('click', () => { closeFabMenu(); openZoneModal(null, null); });
 
 // ══════════════════════════════════════════════════
 // ZONE <select> OPTIONS (indented tree)
 // ══════════════════════════════════════════════════
 function buildZoneOptions(selectEl, selectedId, excludeId) {
-  const keep = selectEl.querySelector('option[value=""]');
-  selectEl.innerHTML = '';
-  if (keep) selectEl.appendChild(keep); else {
-    const opt = document.createElement('option'); opt.value = ''; opt.textContent = '— без зоны —';
-    selectEl.appendChild(opt);
-  }
+  selectEl.innerHTML = '<option value="">— без зоны —</option>';
   function walk(parentId, depth) {
     zoneChildren(parentId).forEach(z => {
       if (excludeId && (z.id === excludeId || isDescendantOf(z.id, excludeId))) return;
@@ -1043,77 +1229,181 @@ function buildZoneOptions(selectEl, selectedId, excludeId) {
   walk(null, 0);
   selectEl.value = selectedId || '';
 }
-function isDescendantOf(zoneId, ancestorId) {
-  let z = zoneById(zoneId);
-  while (z && z.parent_id) {
-    if (z.parent_id === ancestorId) return true;
-    z = zoneById(z.parent_id);
+
+// ══════════════════════════════════════════════════
+// QUICK ADD PRODUCT
+// ══════════════════════════════════════════════════
+function openQuickAdd(zoneId) {
+  quickAddZoneId = zoneId;
+  $('qaName').value = '';
+  if (zoneId) {
+    $('qaZoneRow').style.display = 'block';
+    $('qaZoneLabel').textContent = (zoneById(zoneId)?.emoji || '📦') + ' ' + zonePath(zoneId);
+  } else {
+    $('qaZoneRow').style.display = 'none';
   }
-  return false;
+  $('quickAddBackdrop').classList.add('on');
+  setTimeout(() => $('qaName').focus(), 30);
+}
+function closeQuickAdd() { $('quickAddBackdrop').classList.remove('on'); }
+$('quickAddClose').addEventListener('click', closeQuickAdd);
+$('quickAddBackdrop').addEventListener('click', e => { if (e.target.id === 'quickAddBackdrop') closeQuickAdd(); });
+$('qaName').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnQuickAddSave').click(); });
+$('btnQuickAddSave').addEventListener('click', async () => {
+  const name = $('qaName').value.trim();
+  if (!name) { toast('Введи название', 'err'); return; }
+  try {
+    const id = await saveProduct(null, {
+      name, zone_id: quickAddZoneId || null, status: 'want', priority: 1, tags: [], notes: null,
+    });
+    closeQuickAdd();
+    render();
+    toast('Товар добавлен ✓', 'ok');
+    openProductDetail(id);
+  } catch (e) { if (e.message !== 'locked') toast('Ошибка: ' + e.message, 'err'); }
+});
+
+// ══════════════════════════════════════════════════
+// PRODUCT DETAIL MODAL (compact: image + variants, hover preview)
+// ══════════════════════════════════════════════════
+function openProductDetail(id) {
+  currentProductId = id;
+  renderProductDetail();
+  $('detailBackdrop').classList.add('on');
+}
+function closeProductDetail() { $('detailBackdrop').classList.remove('on'); currentProductId = null; }
+$('detailClose').addEventListener('click', closeProductDetail);
+$('detailBackdrop').addEventListener('click', e => { if (e.target.id === 'detailBackdrop') closeProductDetail(); });
+
+function renderProductDetail() {
+  const item = products.find(i => i.id === currentProductId);
+  if (!item) return;
+  const variants = variantsByProduct[item.id] || [];
+  const fav = variants.find(v => v.is_favorite);
+  const favImage = fav?.image_url || variants.find(v => v.image_url)?.image_url || '';
+
+  $('detailTitleTop').textContent = item.name;
+  $('detailTitle').textContent = item.name;
+  $('detailCount').textContent = `${variants.length} вариант${variants.length === 1 ? '' : variants.length < 5 ? 'а' : 'ов'} · ${item.zone_id ? zonePath(item.zone_id) : 'без зоны'}`;
+
+  const pLabel = item.priority === 2 ? ['p2', '🔴 Срочно'] : item.priority === 1 ? ['p1', '📅 План'] : ['', '○ Обычный'];
+  const sLabel = item.status === 'ordered' ? 'Заказано' : item.status === 'done' ? 'Куплено' : 'Хочу';
+  $('detailBadges').innerHTML = `
+    <span class="detail-badge ${pLabel[0]}">${pLabel[1]}</span>
+    <span class="detail-badge">${sLabel}</span>
+    ${item.source_module === 'cosplay' ? `<span class="detail-badge cosplay">🎭 Косплей</span>` : ''}
+    ${(item.tags || []).map(t => `<span class="detail-badge">${esc(t)}</span>`).join('')}
+  `;
+
+  const mainWrap = $('detailMainImageWrap');
+  mainWrap.innerHTML = favImage
+    ? `<img id="detailMainImg" src="${esc(favImage)}"/>`
+    : `<div class="detail-main-placeholder">🛍️</div>`;
+  const mainImg = $('detailMainImg');
+  if (mainImg) mainImg.addEventListener('click', () => openLightbox(mainImg.src));
+
+  const list = $('detailVariants');
+  if (!variants.length) {
+    list.innerHTML = `<div class="detail-empty">Пока нет вариантов — добавь первый.</div>`;
+  } else {
+    list.innerHTML = '';
+    variants.forEach(v => {
+      const row = document.createElement('div');
+      row.className = 'detail-variant' + (v.is_favorite ? ' favorite' : '');
+      row.innerHTML = `
+        ${v.image_url ? `<img class="detail-variant-photo" src="${esc(v.image_url)}"/>` : `<div class="detail-variant-placeholder">—</div>`}
+        <div>
+          <div class="detail-variant-name">${esc(v.name)}</div>
+          ${v.note ? `<div class="detail-variant-note">${esc(v.note)}</div>` : ''}
+        </div>
+        <div class="detail-variant-price">${v.price ? fmtPrice(v.price) : '—'}</div>
+        <div class="detail-variant-actions">
+          <button class="detail-icon fav" data-act="fav" title="Избранный">${v.is_favorite ? '★' : '☆'}</button>
+          ${v.url ? `<a class="detail-icon" href="${esc(v.url)}" target="_blank" rel="noopener" title="Открыть">↗</a>` : ''}
+          <button class="detail-icon" data-act="edit" title="Редактировать">✎</button>
+          <button class="detail-icon danger" data-act="del" title="Удалить">×</button>
+        </div>`;
+      if (v.image_url) {
+        // desktop: наведение временно показывает фото варианта, при уходе курсора — возврат к избранному
+        row.addEventListener('mouseenter', () => renderMainImage(v.image_url));
+        row.addEventListener('mouseleave', () => renderMainImage(favImage));
+        // мобильные: тап по строке (не по кнопкам/фото) закрепляет превью этого варианта
+        row.addEventListener('click', e => {
+          if (e.target.closest('.detail-icon, a, .detail-variant-photo')) return;
+          renderMainImage(v.image_url);
+        });
+        row.style.cursor = 'pointer';
+      }
+      row.querySelector('[data-act="fav"]').addEventListener('click', async () => {
+        try { await upsertVariant(item.id, { is_favorite: true }, v.id); renderProductDetail(); render(); }
+        catch (e) { toast('Ошибка: ' + e.message, 'err'); }
+      });
+      row.querySelector('[data-act="edit"]').addEventListener('click', () => openVariantModal(item.id, v));
+      row.querySelector('[data-act="del"]').addEventListener('click', async () => {
+        if (!confirm('Удалить этот вариант?')) return;
+        try { await removeVariant(item.id, v.id); renderProductDetail(); render(); toast('Удалено', 'ok'); }
+        catch (e) { toast('Ошибка: ' + e.message, 'err'); }
+      });
+      const photo = row.querySelector('.detail-variant-photo');
+      if (photo) photo.addEventListener('click', () => openLightbox(v.image_url));
+      list.appendChild(row);
+    });
+  }
+
+  $('detailEditProduct').onclick = () => openEditModal(item.id);
+  $('detailAddVariant').onclick  = () => openVariantModal(item.id, null);
+  $('detailDelProduct').style.display = item.source_module === 'cosplay' ? 'none' : 'flex';
+  $('detailDelProduct').onclick = async () => {
+    if (!confirm('Удалить эту покупку вместе со всеми вариантами?')) return;
+    try { await removeProduct(item.id); closeProductDetail(); render(); toast('Удалено', 'ok'); }
+    catch (e) { toast('Ошибка: ' + e.message, 'err'); }
+  };
+}
+function renderMainImage(src) {
+  const wrap = $('detailMainImageWrap');
+  wrap.innerHTML = src ? `<img id="detailMainImg" src="${esc(src)}"/>` : `<div class="detail-main-placeholder">🛍️</div>`;
+  const mainImg = $('detailMainImg');
+  if (mainImg) mainImg.addEventListener('click', () => openLightbox(mainImg.src));
 }
 
 // ══════════════════════════════════════════════════
-// PRODUCT FORM
+// PRODUCT EDIT MODAL (basic fields)
 // ══════════════════════════════════════════════════
-function resetForm() {
-  editId = null;
-  curTags = []; curPriority = 1; curStatus = 'want';
-  $('fName').value = ''; $('fNotes').value = ''; $('tagIn').value = '';
-  buildZoneOptions($('fZone'), null);
-  renderTagChips(); syncPrioBtns(); syncStatusBtns();
-  $('formTitle').textContent = 'Новая покупка';
-  $('btnDel').style.display = 'none';
-  $('variantsSection').style.display = 'none';
-}
-
-function openAdd() { resetForm(); openSheet('form'); }
-
-function openEdit(id) {
+function openEditModal(id) {
   const item = products.find(i => i.id === id);
   if (!item) return;
-  editId = id;
-  $('fName').value  = item.name || '';
-  $('fNotes').value = item.notes || '';
-  buildZoneOptions($('fZone'), item.zone_id);
+  editProductId = id;
+  $('eName').value  = item.name || '';
+  $('eNotes').value = item.notes || '';
+  buildZoneOptions($('eZone'), item.zone_id);
   curTags     = [...(item.tags || [])];
   curPriority = item.priority ?? 1;
   curStatus   = item.status || 'want';
   renderTagChips(); syncPrioBtns(); syncStatusBtns();
-  $('formTitle').textContent = item.source_module === 'cosplay' ? 'Косплей-предмет (только просмотр)' : 'Редактировать';
-  $('btnDel').style.display = item.source_module === 'cosplay' ? 'none' : 'block';
-  $('btnSave').style.display = item.source_module === 'cosplay' ? 'none' : 'block';
-  $('variantsSection').style.display = 'block';
-  renderVariantsList(id);
-  openSheet('form');
+  $('editBackdrop').classList.add('on');
 }
+function closeEditModal() { $('editBackdrop').classList.remove('on'); editProductId = null; }
+$('editClose').addEventListener('click', closeEditModal);
+$('editBackdrop').addEventListener('click', e => { if (e.target.id === 'editBackdrop') closeEditModal(); });
 
-$('btnSave').addEventListener('click', async () => {
-  const name = $('fName').value.trim();
+$('btnSaveEdit').addEventListener('click', async () => {
+  const name = $('eName').value.trim();
   if (!name) { toast('Введи название', 'err'); return; }
-  const btn = $('btnSave');
+  const btn = $('btnSaveEdit');
   btn.disabled = true; btn.textContent = 'Сохранение...';
   try {
-    const newId = await upsertProduct({
+    await saveProduct(editProductId, {
       name,
-      zone_id: $('fZone').value || null,
-      notes:   $('fNotes').value.trim() || null,
+      zone_id: $('eZone').value || null,
+      notes:   $('eNotes').value.trim() || null,
       tags:    curTags,
       priority: curPriority,
       status:   curStatus,
     });
-    const wasNew = !editId;
-    editId = newId;
     render();
-    toast(wasNew ? 'Товар добавлен ✓' : 'Обновлено ✓', 'ok');
-    if (wasNew) {
-      // остаёмся в шторке, открываем раздел вариантов
-      $('formTitle').textContent = 'Редактировать';
-      $('btnDel').style.display = 'block';
-      $('variantsSection').style.display = 'block';
-      renderVariantsList(newId);
-    } else {
-      closeSheets();
-    }
+    closeEditModal();
+    if (currentProductId === editProductId) renderProductDetail();
+    toast('Сохранено ✓', 'ok');
   } catch (e) {
     if (e.message !== 'locked') toast('Ошибка: ' + e.message, 'err');
   } finally {
@@ -1121,16 +1411,6 @@ $('btnSave').addEventListener('click', async () => {
   }
 });
 
-$('btnDel').addEventListener('click', async () => {
-  if (!editId) return;
-  if (!confirm('Удалить эту покупку вместе со всеми вариантами?')) return;
-  try {
-    await removeProduct(editId);
-    render(); closeSheets(); toast('Удалено', 'ok');
-  } catch (e) { toast('Ошибка: ' + e.message, 'err'); }
-});
-
-// priority / status buttons
 document.querySelectorAll('.prio-opt').forEach(btn => {
   btn.addEventListener('click', () => { curPriority = +btn.dataset.p; syncPrioBtns(); });
 });
@@ -1164,51 +1444,15 @@ function renderTagChips() {
   curTags.forEach((t, i) => {
     const chip = document.createElement('span');
     chip.className = 'tc';
-    chip.innerHTML = `${esc(t)}<button data-i="${i}">×</button>`;
+    chip.innerHTML = `${esc(t)}<button type="button" data-i="${i}">×</button>`;
     chip.querySelector('button').addEventListener('click', () => { curTags.splice(i, 1); renderTagChips(); });
     $('tagsWrap').insertBefore(chip, tagIn);
   });
 }
 
 // ══════════════════════════════════════════════════
-// VARIANTS UI (inside product sheet)
+// VARIANT MODAL
 // ══════════════════════════════════════════════════
-function renderVariantsList(productId) {
-  const list = variantsByProduct[productId] || [];
-  const wrap = $('variantsList');
-  if (!list.length) { wrap.innerHTML = `<div class="variant-empty">Пока нет вариантов — добавь первый.</div>`; return; }
-  wrap.innerHTML = list.map(v => `
-    <div class="variant-row" data-vid="${v.id}">
-      <div class="variant-thumb">${v.image_url ? `<img src="${esc(v.image_url)}"/>` : '🛍️'}</div>
-      <div class="variant-info">
-        <div class="variant-name">${esc(v.name)}</div>
-        <div class="variant-meta">${v.price ? fmtPrice(v.price) : '—'}${v.url ? ' · есть ссылка' : ''}</div>
-      </div>
-      <div class="variant-btns">
-        <button class="fav ${v.is_favorite ? 'on' : ''}" data-act="fav" title="Избранный">${v.is_favorite ? '★' : '☆'}</button>
-        <button data-act="edit" title="Редактировать">✎</button>
-        <button data-act="del" title="Удалить">×</button>
-      </div>
-    </div>`).join('');
-
-  wrap.querySelectorAll('.variant-row').forEach(row => {
-    const vid = row.dataset.vid;
-    const v = list.find(x => x.id === vid);
-    row.querySelector('[data-act="fav"]').addEventListener('click', async () => {
-      try { await upsertVariant(productId, { is_favorite: true }, vid); renderVariantsList(productId); render(); }
-      catch (e) { toast('Ошибка: ' + e.message, 'err'); }
-    });
-    row.querySelector('[data-act="edit"]').addEventListener('click', () => openVariantModal(productId, v));
-    row.querySelector('[data-act="del"]').addEventListener('click', async () => {
-      if (!confirm('Удалить этот вариант?')) return;
-      try { await removeVariant(productId, vid); renderVariantsList(productId); render(); toast('Удалено', 'ok'); }
-      catch (e) { toast('Ошибка: ' + e.message, 'err'); }
-    });
-  });
-}
-$('btnAddVariant').addEventListener('click', () => openVariantModal(editId, null));
-
-// ── variant modal ──
 function openVariantModal(productId, variant) {
   editingVariant = variant;
   variantImgFile = null;
@@ -1230,6 +1474,7 @@ function openVariantModal(productId, variant) {
   $('variantModalBackdrop').classList.add('on');
 }
 function closeVariantModal() { $('variantModalBackdrop').classList.remove('on'); editingVariant = null; }
+$('variantModalClose').addEventListener('click', closeVariantModal);
 $('variantModalCancel').addEventListener('click', closeVariantModal);
 $('variantModalBackdrop').addEventListener('click', e => { if (e.target.id === 'variantModalBackdrop') closeVariantModal(); });
 
@@ -1302,7 +1547,7 @@ $('variantModalSave').addEventListener('click', async () => {
       is_favorite: variantFav,
     };
     await upsertVariant(productId, payload, editingVariant ? editingVariant.id : null);
-    renderVariantsList(productId);
+    renderProductDetail();
     render();
     closeVariantModal();
     toast('Сохранено ✓', 'ok');
@@ -1313,18 +1558,13 @@ $('variantModalDel').addEventListener('click', async () => {
   if (!editingVariant) return;
   if (!confirm('Удалить этот вариант?')) return;
   const productId = $('variantModalBackdrop').dataset.productId;
-  try { await removeVariant(productId, editingVariant.id); renderVariantsList(productId); render(); closeVariantModal(); toast('Удалено', 'ok'); }
+  try { await removeVariant(productId, editingVariant.id); renderProductDetail(); render(); closeVariantModal(); toast('Удалено', 'ok'); }
   catch (e) { toast('Ошибка: ' + e.message, 'err'); }
 });
 
 // ══════════════════════════════════════════════════
-// ZONES MANAGE SHEET
+// ZONES MANAGE SHEET (full flat/indented list + DnD)
 // ══════════════════════════════════════════════════
-const ALL_MODULES = [
-  { id: 'shopping', label: '🛒 Покупки' },
-  { id: 'cosplay',  label: '🎭 Косплей' },
-];
-
 function renderZoneManageList() {
   const wrap = $('zoneManageList');
   wrap.innerHTML = '';
@@ -1333,15 +1573,19 @@ function renderZoneManageList() {
       const row = document.createElement('div');
       row.className = 'zman-row';
       row.style.marginLeft = (depth * 16) + 'px';
+      const hp = countHighPriorityInZone(z.id);
       row.innerHTML = `
         <span class="zman-emoji">${z.emoji || '📦'}</span>
         <span class="zman-name">${esc(z.name)}</span>
-        <span class="zman-count">${countProductsInZone(z.id)}</span>
+        ${hp ? `<span class="zone-prio-badge">🔴 ${hp}</span>` : ''}
+        <span class="zman-count">${countProductsInZone(z.id)} · ${sumZone(z.id) ? fmtPrice(sumZone(z.id)) : '—'}</span>
         <div class="zman-btns">
-          <button data-act="add-sub" title="Добавить подзону">＋</button>
+          <button data-act="add" title="Добавить товар">＋</button>
+          <button data-act="add-sub" title="Добавить подзону">🗂</button>
           <button data-act="edit" title="Редактировать">✎</button>
           <button data-act="del" title="Удалить">×</button>
         </div>`;
+      row.querySelector('[data-act="add"]').addEventListener('click', () => openQuickAdd(z.id));
       row.querySelector('[data-act="add-sub"]').addEventListener('click', () => openZoneModal(null, z.id));
       row.querySelector('[data-act="edit"]').addEventListener('click', () => openZoneModal(z, z.parent_id));
       row.querySelector('[data-act="del"]').addEventListener('click', async () => {
@@ -1349,6 +1593,8 @@ function renderZoneManageList() {
         const ok = await removeZone(z.id);
         if (ok) { renderZoneManageList(); render(); toast('Удалено', 'ok'); }
       });
+      attachZoneDrag(row, z.id);
+      attachDropTarget(row, z.id);
       wrap.appendChild(row);
       walk(z.id, depth + 1);
     });
@@ -1358,6 +1604,7 @@ function renderZoneManageList() {
 }
 $('btnManageZones').addEventListener('click', () => { renderZoneManageList(); openSheet('manage'); });
 $('btnAddRootZone').addEventListener('click', () => openZoneModal(null, null));
+attachDropTarget($('zmanRootDrop'), null);
 
 // ── zone add/edit modal ──
 let zoneModalActiveMods = new Set(['shopping']);
@@ -1370,9 +1617,11 @@ function openZoneModal(zone, parentId) {
   zoneModalActiveMods = new Set(zone && Array.isArray(zone.modules) ? zone.modules : ['shopping']);
   syncModPills();
   $('zShowInPurchases').classList.toggle('on', !!(zone && zone.show_in_purchases));
+  $('zoneModalDel').style.display = zone ? 'block' : 'none';
   $('zoneModalBackdrop').classList.add('on');
 }
 function closeZoneModal() { $('zoneModalBackdrop').classList.remove('on'); editingZone = null; }
+$('zoneModalClose').addEventListener('click', closeZoneModal);
 $('zoneModalCancel').addEventListener('click', closeZoneModal);
 $('zoneModalBackdrop').addEventListener('click', e => { if (e.target.id === 'zoneModalBackdrop') closeZoneModal(); });
 
@@ -1400,17 +1649,21 @@ $('zoneModalSave').addEventListener('click', async () => {
       show_in_purchases: $('zShowInPurchases').classList.contains('on'),
     }, editingZone ? editingZone.id : null);
     renderZoneManageList();
-    buildZoneOptions($('fZone'), $('fZone').value);
     render();
     closeZoneModal();
     toast('Сохранено ✓', 'ok');
   } catch (e) { toast('Ошибка: ' + e.message, 'err'); }
 });
+$('zoneModalDel').addEventListener('click', async () => {
+  if (!editingZone) return;
+  if (!confirm(`Удалить зону «${editingZone.name}»? Товары из неё станут «без зоны».`)) return;
+  const ok = await removeZone(editingZone.id);
+  if (ok) { renderZoneManageList(); render(); closeZoneModal(); toast('Удалено', 'ok'); }
+});
 
 // ══════════════════════════════════════════════════
 // LIGHTBOX
 // ══════════════════════════════════════════════════
-mainList.addEventListener('click', () => {}); // (images open product edit instead of lightbox, kept simple)
 function openLightbox(src) { if (!src) return; $('lightboxImg').src = src; $('lightbox').classList.add('active'); }
 function closeLightbox() { $('lightbox').classList.remove('active'); $('lightboxImg').src = ''; }
 $('lightbox').addEventListener('click', closeLightbox);
@@ -1455,7 +1708,7 @@ function toast(msg, type = '') {
 function getDemoZones() {
   return [
     { id: 'z1', name: 'Кухня', emoji: '🍳', parent_id: null, modules: ['shopping'], show_in_purchases: false, _open: true },
-    { id: 'z1a', name: 'Мелкая техника', emoji: '🔌', parent_id: 'z1', modules: ['shopping'], show_in_purchases: false },
+    { id: 'z1a', name: 'Мелкая техника', emoji: '🔌', parent_id: 'z1', modules: ['shopping'], show_in_purchases: false, _open: true },
     { id: 'z2', name: 'Одежда', emoji: '👗', parent_id: null, modules: ['shopping'], show_in_purchases: false },
     { id: 'z3', name: 'Техника', emoji: '💻', parent_id: null, modules: ['shopping'], show_in_purchases: false },
     { id: 'z4', name: 'Косплей', emoji: '🎭', parent_id: null, modules: ['cosplay'], show_in_purchases: true },
@@ -1468,6 +1721,7 @@ function getDemoProducts() {
     { id: '3', name: 'Платье на лето', zone_id: 'z2', status: 'want', priority: 0, tags: ['лето'], created_at: new Date().toISOString() },
     { id: '4', name: 'Парик для косплея', zone_id: 'z4', status: 'done', priority: 1, tags: ['аниме'], source_module: 'cosplay', created_at: new Date().toISOString() },
     { id: '5', name: 'Блендер Kitchenaid', zone_id: 'z1', status: 'want', priority: 1, tags: [], created_at: new Date().toISOString() },
+    { id: '6', name: 'Пауэрбанк 20000mAh', zone_id: null, status: 'want', priority: 2, tags: ['гаджеты'], created_at: new Date().toISOString() },
   ];
 }
 function getDemoVariants() {
@@ -1477,8 +1731,30 @@ function getDemoVariants() {
     '3': [{ id: 'v4', name: 'Голубое, M', price: 4500, is_favorite: true }],
     '4': [{ id: 'v5', name: 'Стандарт', price: 3200, is_favorite: true }],
     '5': [{ id: 'v6', name: 'Красный', price: 8900, is_favorite: true }],
+    '6': [{ id: 'v7', name: 'Xiaomi', price: 2500, is_favorite: true }],
   };
 }
+
+// ══════════════════════════════════════════════════
+// UI STATE (открытые зоны + позиция скролла) — переживает перезагрузку
+// ══════════════════════════════════════════════════
+const UI_KEY = 'wishlist_ui_state_v1';
+function loadUIState() {
+  try { return JSON.parse(localStorage.getItem(UI_KEY) || 'null'); } catch (e) { return null; }
+}
+function saveUIState() {
+  try {
+    localStorage.setItem(UI_KEY, JSON.stringify({
+      scrollTop: $('scrollArea').scrollTop,
+      openZones: Object.fromEntries(zones.map(z => [z.id, !!z._open])),
+    }));
+  } catch (e) {}
+}
+let _scrollSaveTimer;
+$('scrollArea').addEventListener('scroll', () => {
+  clearTimeout(_scrollSaveTimer);
+  _scrollSaveTimer = setTimeout(saveUIState, 250);
+});
 
 // ══════════════════════════════════════════════════
 // BOOT
@@ -1486,8 +1762,18 @@ function getDemoVariants() {
 (async () => {
   setView('gallery');
   await loadAll();
-  zones.forEach(z => { if (z._open === undefined) z._open = true; });
+  const savedUI = loadUIState();
+  zones.forEach(z => {
+    if (savedUI && savedUI.openZones && Object.prototype.hasOwnProperty.call(savedUI.openZones, z.id)) {
+      z._open = savedUI.openZones[z.id];
+    } else if (z._open === undefined) {
+      z._open = true;
+    }
+  });
   render();
+  if (savedUI && typeof savedUI.scrollTop === 'number') {
+    requestAnimationFrame(() => { $('scrollArea').scrollTop = savedUI.scrollTop; });
+  }
   if (DEMO_MODE) toast('⚠ Демо-режим — замени ключи Supabase', 'err');
 
   if ('serviceWorker' in navigator && !DEMO_MODE) {
